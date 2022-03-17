@@ -4,11 +4,11 @@ import './model.dart';
 import './note_from_widget.dart';
 
 class AddEditNotePage extends StatefulWidget {
-  final WordPair? note;
+  final List<WordPair>? wordPairList;
 
   const AddEditNotePage({
     Key? key,
-    this.note,
+    this.wordPairList,
   }) : super(key: key);
   @override
   _AddEditNotePageState createState() => _AddEditNotePageState();
@@ -16,17 +16,33 @@ class AddEditNotePage extends StatefulWidget {
 
 class _AddEditNotePageState extends State<AddEditNotePage> {
   final _formKey = GlobalKey<FormState>();
-  late int numberSeen;
+  late int numberSeen ;
   late String baseWord;
   late String translation;
+  late List<WordPair> wordPairList;
 
   @override
   void initState() {
     super.initState();
 
-    numberSeen = widget.note?.numberSeen ?? 0;
-    baseWord = widget.note?.baseWord ?? '';
-    translation = widget.note?.translation ?? '';
+    numberSeen  = 0;
+    baseWord    = '';
+    translation = '';
+
+    if(widget.wordPairList == null)
+      {
+        wordPairList = [new WordPair
+          (numberSeen: numberSeen, baseWord: baseWord, translation: translation)
+        ];
+      }
+    else
+      {
+        wordPairList = widget.wordPairList!;
+        wordPairList.add(new WordPair(
+            numberSeen: numberSeen, baseWord: baseWord, translation: translation)
+        );
+      }
+    wordPairList = widget.wordPairList ?? []; //init word pair list if new, otherwise use pointer
   }
 
   @override
@@ -69,7 +85,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     final isValid = _formKey.currentState!.validate();
 
     if (isValid) {
-      final isUpdating = widget.note != null;
+      final isUpdating = widget.wordPairList != null;
 
       if (isUpdating) {
         await updateNote();
@@ -82,13 +98,10 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
   }
 
   Future updateNote() async {
-    final note = widget.note!.copy(
-      numberSeen: numberSeen,
-      baseWord: baseWord,
-      translation: translation,
-    );
+    final note = new WordPair(
+        numberSeen: numberSeen, baseWord: baseWord, translation: translation);
 
-    await NotesDatabase.instance.updateWordPair(note);
+    await NotesDatabase.instance.addWordPair(note);
   }
 
   Future addNote() async {

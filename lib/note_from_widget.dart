@@ -26,19 +26,6 @@ class NoteFormWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Slider(
-                  value: (numberSeen ?? 0).toDouble(),
-                  min: 0,
-                  max: 5,
-                  divisions: 5,
-                  onChanged: (number) => onChangedNumberSeen(number.toInt()),
-                ),
-              )
-            ],
-          ),
           buildTitle(),
           SizedBox(height: 8),
           buildDescription(),
@@ -53,12 +40,11 @@ class NoteFormWidget extends StatelessWidget {
     initialValue: baseWord,
     style: TextStyle(
       color: Colors.white70,
-      fontWeight: FontWeight.bold,
       fontSize: 24,
     ),
     decoration: InputDecoration(
       border: InputBorder.none,
-      hintText: 'Title',
+      hintText: 'Spanish',
       hintStyle: TextStyle(color: Colors.white70),
     ),
     validator: (title) =>
@@ -67,13 +53,13 @@ class NoteFormWidget extends StatelessWidget {
   );
 
   Widget buildDescription() => TextFormField(
-    maxLines: 5,
+    maxLines: 1,
     initialValue: translation,
-    style: TextStyle(color: Colors.white60, fontSize: 18),
+    style: TextStyle(color: Colors.white70, fontSize: 24),
     decoration: InputDecoration(
       border: InputBorder.none,
-      hintText: 'Type something...',
-      hintStyle: TextStyle(color: Colors.white60),
+      hintText: 'English',
+      hintStyle: TextStyle(color: Colors.white70),
     ),
     validator: (title) => title != null && title.isEmpty
         ? 'The description cannot be empty'

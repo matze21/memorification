@@ -106,7 +106,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         if (isLoading) return;
 
         await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddEditNotePage(note: note),
+          builder: (context) => AddEditNotePage(wordPairList: wordPairs),
         ));
 
         refreshNote();
