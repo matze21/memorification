@@ -1,68 +1,54 @@
-final String tableNotes = 'notes';
+final String tableNotes = 'SpanishEnglish';  // for now only work with one language
 
-class NoteFields {
+class WordPairFields {
   static final List<String> values = [
     /// Add all fields
-    id, isImportant, number, title, description, time
+    id, numberSeen, baseWord, translation
   ];
 
   static final String id = '_id';
-  static final String isImportant = 'isImportant';
-  static final String number = 'number';
-  static final String title = 'title';
-  static final String description = 'description';
-  static final String time = 'time';
+  static final String numberSeen = 'numberSeen';
+  static final String baseWord = 'baseWord';
+  static final String translation = 'translation';
 }
 
-class Note {
+class WordPair {
   final int? id;
-  final bool isImportant;
-  final int number;
-  final String title;
-  final String description;
-  final DateTime createdTime;
+  final int numberSeen;
+  final String baseWord;
+  final String translation;
 
-  const Note({
+  const WordPair({
     this.id,
-    required this.isImportant,
-    required this.number,
-    required this.title,
-    required this.description,
-    required this.createdTime,
+    required this.numberSeen,
+    required this.baseWord,
+    required this.translation,
   });
 
-  Note copy({
+  WordPair copy({
     int? id,
-    bool? isImportant,
-    int? number,
-    String? title,
-    String? description,
-    DateTime? createdTime,
+    int? numberSeen,
+    String? baseWord,
+    String? translation,
   }) =>
-      Note(
+      WordPair(
         id: id ?? this.id,
-        isImportant: isImportant ?? this.isImportant,
-        number: number ?? this.number,
-        title: title ?? this.title,
-        description: description ?? this.description,
-        createdTime: createdTime ?? this.createdTime,
+        numberSeen: numberSeen ?? this.numberSeen,
+        baseWord: baseWord ?? this.baseWord,
+        translation: translation ?? this.translation,
       );
 
-  static Note fromJson(Map<String, Object?> json) => Note(
-    id: json[NoteFields.id] as int?,
-    isImportant: json[NoteFields.isImportant] == 1,
-    number: json[NoteFields.number] as int,
-    title: json[NoteFields.title] as String,
-    description: json[NoteFields.description] as String,
-    createdTime: DateTime.parse(json[NoteFields.time] as String),
+  static WordPair fromJson(Map<String, Object?> json) => WordPair(
+    id: json[WordPairFields.id] as int?,
+    numberSeen: json[WordPairFields.numberSeen] as int,
+    baseWord: json[WordPairFields.baseWord] as String,
+    translation: json[WordPairFields.translation] as String,
   );
 
   Map<String, Object?> toJson() => {
-    NoteFields.id: id,
-    NoteFields.title: title,
-    NoteFields.isImportant: isImportant ? 1 : 0,
-    NoteFields.number: number,
-    NoteFields.description: description,
-    NoteFields.time: createdTime.toIso8601String(),
+    WordPairFields.id: id,
+    WordPairFields.baseWord: baseWord,
+    WordPairFields.numberSeen: numberSeen,
+    WordPairFields.translation: translation,
   };
 }

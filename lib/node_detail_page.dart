@@ -17,7 +17,7 @@ class NoteDetailPage extends StatefulWidget {
 }
 
 class _NoteDetailPageState extends State<NoteDetailPage> {
-  late Note note;
+  late WordPair note;
   bool isLoading = false;
 
   @override
@@ -30,7 +30,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   Future refreshNote() async {
     setState(() => isLoading = true);
 
-    this.note = await NotesDatabase.instance.readNote(widget.noteId);
+    this.note = await NotesDatabase.instance.readWordPair(widget.noteId);
 
     setState(() => isLoading = false);
   }
@@ -48,7 +48,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         padding: EdgeInsets.symmetric(vertical: 8),
         children: [
           Text(
-            note.title,
+            note.baseWord,
             style: TextStyle(
               color: Colors.white,
               fontSize: 22,
@@ -57,12 +57,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
           ),
           SizedBox(height: 8),
           Text(
-            DateFormat.yMMMd().format(note.createdTime),
-            style: TextStyle(color: Colors.white38),
-          ),
-          SizedBox(height: 8),
-          Text(
-            note.description,
+            note.translation,
             style: TextStyle(color: Colors.white70, fontSize: 18),
           )
         ],
@@ -85,7 +80,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   Widget deleteButton() => IconButton(
     icon: Icon(Icons.delete),
     onPressed: () async {
-      await NotesDatabase.instance.delete(widget.noteId);
+      await NotesDatabase.instance.deleteWordPair(widget.noteId);
 
       Navigator.of(context).pop();
     },

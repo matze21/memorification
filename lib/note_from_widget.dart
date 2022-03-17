@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
 
 class NoteFormWidget extends StatelessWidget {
-  final bool? isImportant;
-  final int? number;
-  final String? title;
-  final String? description;
-  final ValueChanged<bool> onChangedImportant;
-  final ValueChanged<int> onChangedNumber;
-  final ValueChanged<String> onChangedTitle;
-  final ValueChanged<String> onChangedDescription;
+  final int? numberSeen;
+  final String? baseWord;
+  final String? translation;
+  final ValueChanged<int> onChangedNumberSeen;
+  final ValueChanged<String> onChangedBaseWord;
+  final ValueChanged<String> onChangedTranslation;
 
   const NoteFormWidget({
     Key? key,
-    this.isImportant = false,
-    this.number = 0,
-    this.title = '',
-    this.description = '',
-    required this.onChangedImportant,
-    required this.onChangedNumber,
-    required this.onChangedTitle,
-    required this.onChangedDescription,
+    this.numberSeen = 0,
+    this.baseWord = '',
+    this.translation = '',
+
+    required this.onChangedNumberSeen,
+    required this.onChangedBaseWord,
+    required this.onChangedTranslation,
   }) : super(key: key);
 
   @override
@@ -31,17 +28,13 @@ class NoteFormWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              Switch(
-                value: isImportant ?? false,
-                onChanged: onChangedImportant,
-              ),
               Expanded(
                 child: Slider(
-                  value: (number ?? 0).toDouble(),
+                  value: (numberSeen ?? 0).toDouble(),
                   min: 0,
                   max: 5,
                   divisions: 5,
-                  onChanged: (number) => onChangedNumber(number.toInt()),
+                  onChanged: (number) => onChangedNumberSeen(number.toInt()),
                 ),
               )
             ],
@@ -57,7 +50,7 @@ class NoteFormWidget extends StatelessWidget {
 
   Widget buildTitle() => TextFormField(
     maxLines: 1,
-    initialValue: title,
+    initialValue: baseWord,
     style: TextStyle(
       color: Colors.white70,
       fontWeight: FontWeight.bold,
@@ -70,12 +63,12 @@ class NoteFormWidget extends StatelessWidget {
     ),
     validator: (title) =>
     title != null && title.isEmpty ? 'The title cannot be empty' : null,
-    onChanged: onChangedTitle,
+    onChanged: onChangedBaseWord,
   );
 
   Widget buildDescription() => TextFormField(
     maxLines: 5,
-    initialValue: description,
+    initialValue: translation,
     style: TextStyle(color: Colors.white60, fontSize: 18),
     decoration: InputDecoration(
       border: InputBorder.none,
@@ -85,6 +78,6 @@ class NoteFormWidget extends StatelessWidget {
     validator: (title) => title != null && title.isEmpty
         ? 'The description cannot be empty'
         : null,
-    onChanged: onChangedDescription,
+    onChanged: onChangedTranslation,
   );
 }

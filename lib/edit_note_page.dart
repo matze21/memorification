@@ -4,7 +4,7 @@ import './model.dart';
 import './note_from_widget.dart';
 
 class AddEditNotePage extends StatefulWidget {
-  final Note? note;
+  final WordPair? note;
 
   const AddEditNotePage({
     Key? key,
@@ -16,19 +16,17 @@ class AddEditNotePage extends StatefulWidget {
 
 class _AddEditNotePageState extends State<AddEditNotePage> {
   final _formKey = GlobalKey<FormState>();
-  late bool isImportant;
-  late int number;
-  late String title;
-  late String description;
+  late int numberSeen;
+  late String baseWord;
+  late String translation;
 
   @override
   void initState() {
     super.initState();
 
-    isImportant = widget.note?.isImportant ?? false;
-    number = widget.note?.number ?? 0;
-    title = widget.note?.title ?? '';
-    description = widget.note?.description ?? '';
+    numberSeen = widget.note?.numberSeen ?? 0;
+    baseWord = widget.note?.baseWord ?? '';
+    translation = widget.note?.translation ?? '';
   }
 
   @override
@@ -39,22 +37,20 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     body: Form(
       key: _formKey,
       child: NoteFormWidget(
-        isImportant: isImportant,
-        number: number,
-        title: title,
-        description: description,
-        onChangedImportant: (isImportant) =>
-            setState(() => this.isImportant = isImportant),
-        onChangedNumber: (number) => setState(() => this.number = number),
-        onChangedTitle: (title) => setState(() => this.title = title),
-        onChangedDescription: (description) =>
-            setState(() => this.description = description),
+        numberSeen: numberSeen,
+        baseWord: baseWord,
+        translation: translation,
+
+        onChangedNumberSeen: (numberSeen) => setState(() => this.numberSeen = numberSeen),
+        onChangedBaseWord: (baseWord) => setState(() => this.baseWord = baseWord),
+        onChangedTranslation: (translation) =>
+            setState(() => this.translation = translation),
       ),
     ),
   );
 
   Widget buildButton() {
-    final isFormValid = title.isNotEmpty && description.isNotEmpty;
+    final isFormValid = baseWord.isNotEmpty && translation.isNotEmpty;
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -87,24 +83,21 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
 
   Future updateNote() async {
     final note = widget.note!.copy(
-      isImportant: isImportant,
-      number: number,
-      title: title,
-      description: description,
+      numberSeen: numberSeen,
+      baseWord: baseWord,
+      translation: translation,
     );
 
-    await NotesDatabase.instance.update(note);
+    await NotesDatabase.instance.updateWordPair(note);
   }
 
   Future addNote() async {
-    final note = Note(
-      title: title,
-      isImportant: true,
-      number: number,
-      description: description,
-      createdTime: DateTime.now(),
+    final wordPair = WordPair(
+      baseWord: baseWord,
+      numberSeen: numberSeen,
+      translation: translation,
     );
 
-    await NotesDatabase.instance.create(note);
+    await NotesDatabase.instance.addWordPair(wordPair);
   }
 }

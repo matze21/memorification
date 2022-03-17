@@ -12,7 +12,7 @@ class NotesPage extends StatefulWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
-  late List<Note> notes;
+  late List<WordPair> notes;
   bool isLoading = false;
 
   @override
@@ -32,7 +32,7 @@ class _NotesPageState extends State<NotesPage> {
   Future refreshNotes() async {
     setState(() => isLoading = true);
 
-    this.notes = await NotesDatabase.instance.readAllNotes();
+    this.notes = await NotesDatabase.instance.readAllWordPairs();
 
     setState(() => isLoading = false);
   }
@@ -41,7 +41,7 @@ class _NotesPageState extends State<NotesPage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: Text(
-        'Notes',
+        'Vocab Packages',
         style: TextStyle(fontSize: 24),
       ),
       actions: [Icon(Icons.search), SizedBox(width: 12)],
@@ -51,7 +51,7 @@ class _NotesPageState extends State<NotesPage> {
           ? CircularProgressIndicator()
           : notes.isEmpty
           ? Text(
-        'No Notes',
+        'No Packages loaded',
         style: TextStyle(color: Colors.white, fontSize: 24),
       )
           : buildNotes(),

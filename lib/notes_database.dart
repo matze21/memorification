@@ -12,7 +12,7 @@ class NotesDatabase {
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    _database = await _initDB('notes.db');
+    _database = await _initDB('vocabs.db');
     return _database!;
   }
 
@@ -26,22 +26,19 @@ class NotesDatabase {
   Future _createDB(Database db, int version) async {
     final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     final textType = 'TEXT NOT NULL';
-    final boolType = 'BOOLEAN NOT NULL';
     final integerType = 'INTEGER NOT NULL';
 
     await db.execute('''
 CREATE TABLE $tableNotes ( 
-  ${NoteFields.id} $idType, 
-  ${NoteFields.isImportant} $boolType,
-  ${NoteFields.number} $integerType,
-  ${NoteFields.title} $textType,
-  ${NoteFields.description} $textType,
-  ${NoteFields.time} $textType
+  ${WordPairFields.id} $idType, 
+  ${WordPairFields.numberSeen} $integerType,
+  ${WordPairFields.baseWord} $textType,
+  ${WordPairFields.translation} $textType
   )
 ''');
   }
 
-  Future<Note> create(Note note) async {
+  Future<WordPair> addWordPair(WordPair note) async {
     final db = await instance.database;
 
     // final json = note.toJson();
@@ -56,52 +53,52 @@ CREATE TABLE $tableNotes (
     return note.copy(id: id);
   }
 
-  Future<Note> readNote(int id) async {
+  Future<WordPair> readWordPair(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
       tableNotes,
-      columns: NoteFields.values,
-      where: '${NoteFields.id} = ?',
+      columns: WordPairFields.values,
+      where: '${WordPairFields.id} = ?',
       whereArgs: [id],
     );
 
     if (maps.isNotEmpty) {
-      return Note.fromJson(maps.first);
+      return WordPair.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<Note>> readAllNotes() async {
+  Future<List<WordPair>> readAllWordPairs() async {
     final db = await instance.database;
 
-    final orderBy = '${NoteFields.time} ASC';
+    final orderBy = '${WordPairFields.baseWord} ASC';
     // final result =
     //     await db.rawQuery('SELECT * FROM $tableNotes ORDER BY $orderBy');
 
     final result = await db.query(tableNotes, orderBy: orderBy);
 
-    return result.map((json) => Note.fromJson(json)).toList();
+    return result.map((json) => WordPair.fromJson(json)).toList();
   }
 
-  Future<int> update(Note note) async {
+  Future<int> updateWordPair(WordPair note) async {
     final db = await instance.database;
 
     return db.update(
       tableNotes,
       note.toJson(),
-      where: '${NoteFields.id} = ?',
+      where: '${WordPairFields.id} = ?',
       whereArgs: [note.id],
     );
   }
 
-  Future<int> delete(int id) async {
+  Future<int> deleteWordPair(int id) async {
     final db = await instance.database;
 
     return await db.delete(
       tableNotes,
-      where: '${NoteFields.id} = ?',
+      where: '${WordPairFields.id} = ?',
       whereArgs: [id],
     );
   }

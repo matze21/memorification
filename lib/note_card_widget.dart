@@ -18,14 +18,13 @@ class NoteCardWidget extends StatelessWidget {
     required this.index,
   }) : super(key: key);
 
-  final Note note;
+  final WordPair note;
   final int index;
 
   @override
   Widget build(BuildContext context) {
     /// Pick colors from the accent colors based on index
     final color = _lightColors[index % _lightColors.length];
-    final time = DateFormat.yMMMd().format(note.createdTime);
     final minHeight = getMinHeight(index);
 
     return Card(
@@ -37,13 +36,9 @@ class NoteCardWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              time,
-              style: TextStyle(color: Colors.grey.shade700),
-            ),
             SizedBox(height: 4),
             Text(
-              note.title,
+              note.baseWord,
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 20,
