@@ -17,8 +17,10 @@ class NoteDetailPage extends StatefulWidget {
 }
 
 class _NoteDetailPageState extends State<NoteDetailPage> {
-  late WordPair note;
+  late List<WordPair> wordPairs;
+  late List<TableRow> tableRowList;
   bool isLoading = false;
+  double iconSize = 40;
 
   @override
   void initState() {
@@ -30,7 +32,55 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   Future refreshNote() async {
     setState(() => isLoading = true);
 
-    this.note = await NotesDatabase.instance.readWordPair(widget.noteId);
+    wordPairs = await NotesDatabase.instance.readAllWordPairs();
+
+    tableRowList = [
+      TableRow( children: [
+        Column(children:[
+          Text('ID', style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ))
+        ]),
+        Column(children:[
+          Text('English', style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ))
+        ]),
+        Column(children:[
+          Text('Spanish', style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ))
+        ]),
+      ])
+    ];
+    for(WordPair wordPair in wordPairs)
+    {
+      tableRowList.add(
+          TableRow(children: [
+            Center(child: Text(wordPair.id.toString(), style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ))),
+            Center(child: Text(wordPair.baseWord, style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ))),
+            Center(child: Text(wordPair.translation, style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ))),
+          ])
+      );
+    }
 
     setState(() => isLoading = false);
   }
@@ -44,26 +94,11 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         ? Center(child: CircularProgressIndicator())
         : Padding(
       padding: EdgeInsets.all(12),
-      child: ListView(
-        padding: EdgeInsets.symmetric(vertical: 8),
-        children: [
-          Text(
-            note.baseWord,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            note.translation,
-            style: TextStyle(color: Colors.white70, fontSize: 18),
-          )
-        ],
-      ),
-    ),
-  );
+      child: Table(border: TableBorder.all(), children: tableRowList),
+      )
+    );
+
+
 
   Widget editButton() => IconButton(
       icon: Icon(Icons.edit_outlined),
