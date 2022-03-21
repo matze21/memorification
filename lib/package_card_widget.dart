@@ -14,11 +14,11 @@ final _lightColors = [
 class NoteCardWidget extends StatelessWidget {
   NoteCardWidget({
     Key? key,
-    required this.note,
+    required this.vocabPackage,
     required this.index,
   }) : super(key: key);
 
-  final WordPair note;
+  final databaseKey vocabPackage;
   final int index;
 
   @override
@@ -38,7 +38,7 @@ class NoteCardWidget extends StatelessWidget {
           children: [
             SizedBox(height: 4),
             Text(
-              note.baseWord,
+              vocabPackage.getKey(),
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 20,

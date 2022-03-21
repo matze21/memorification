@@ -1,4 +1,15 @@
-final String tableNotes = 'SpanishEnglish';  // for now only work with one language
+List<databaseKey> tableNames = [];  // for now only work with one language
+
+class databaseKey {
+  final String base;
+  final String second;
+
+  const databaseKey(this.base, this.second);
+
+  String getKey(){
+    return base + ' ' + second;
+  }
+}
 
 class WordPairFields {
   static final List<String> values = [

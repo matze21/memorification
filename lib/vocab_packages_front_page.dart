@@ -1,38 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import './notes_database.dart';
+import './vocab_database.dart';
 import './model.dart';
-import './edit_note_page.dart';
-import './node_detail_page.dart';
-import './note_card_widget.dart';
+import './add_edit_vocab_package.dart';
+import './package_card_widget.dart';
+import './add_vocab_package_page.dart';
 
-class NotesPage extends StatefulWidget {
+class vocabPackagesPage extends StatefulWidget {
   @override
-  _NotesPageState createState() => _NotesPageState();
+  _vocabPackagesPageState createState() => _vocabPackagesPageState();
 }
 
-class _NotesPageState extends State<NotesPage> {
-  late List<WordPair> notes;
+class _vocabPackagesPageState extends State<vocabPackagesPage> {
+  late List<WordPair> wordPairs;
   bool isLoading = false;
+  bool isPackageExisting = false;
 
   @override
   void initState() {
     super.initState();
+    tableNames = [];
 
-    refreshNotes();
+    refreshVocabPackages();
   }
 
   @override
   void dispose() {
-    NotesDatabase.instance.close();
+    VocabDatabase.instance.close();
 
     super.dispose();
   }
 
-  Future refreshNotes() async {
+  Future refreshVocabPackages() async {
     setState(() => isLoading = true);
 
-    this.notes = await NotesDatabase.instance.readAllWordPairs();
+    await VocabDatabase.initInstance();
+
+    if(tableNames.isNotEmpty)
+      {
+        setState(() => isPackageExisting = true);
+      }
 
     setState(() => isLoading = false);
   }
@@ -49,45 +56,45 @@ class _NotesPageState extends State<NotesPage> {
     body: Center(
       child: isLoading
           ? CircularProgressIndicator()
-          : notes.isEmpty
+          : tableNames.isEmpty
           ? Text(
         'No Packages loaded',
         style: TextStyle(color: Colors.white, fontSize: 24),
       )
-          : buildNotes(),
+          : renderPackages(),
     ),
     floatingActionButton: FloatingActionButton(
       backgroundColor: Colors.black,
       child: Icon(Icons.add),
       onPressed: () async {
         await Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => AddEditNotePage()),
+          MaterialPageRoute(builder: (context) => AddVocabPackagePage()),
         );
 
-        refreshNotes();
+        refreshVocabPackages();
       },
     ),
   );
 
-  Widget buildNotes() => StaggeredGridView.countBuilder(
+  Widget renderPackages() => StaggeredGridView.countBuilder(
     padding: EdgeInsets.all(8),
-    itemCount: notes.length,
+    itemCount: tableNames.length,
     staggeredTileBuilder: (index) => StaggeredTile.fit(2),
     crossAxisCount: 4,
     mainAxisSpacing: 4,
     crossAxisSpacing: 4,
     itemBuilder: (context, index) {
-      final note = notes[index];
+      final databaseKey package = tableNames[index];
 
       return GestureDetector(
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => NoteDetailPage(noteId: note.id!),
+            builder: (context) => AddEditPackagePage(package),
           ));
 
-          refreshNotes();
+          refreshVocabPackages();
         },
-        child: NoteCardWidget(note: note, index: index),
+        child: NoteCardWidget(vocabPackage: package, index: index),
       );
     },
   );

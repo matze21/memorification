@@ -2,12 +2,12 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import './model.dart';
 
-class NotesDatabase {
-  static final NotesDatabase instance = NotesDatabase._init();
+class VocabDatabase {
+  static final VocabDatabase instance = VocabDatabase._init();
 
   static Database? _database;
 
-  NotesDatabase._init();
+  VocabDatabase._init();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -20,16 +20,20 @@ class NotesDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path, version: 1); //, onCreate: _createDB);
   }
 
-  Future _createDB(Database db, int version) async {
+  static Future initInstance() async {
+    final db = await instance.database;
+  }
+
+  static Future createDB(String tableName) async {
     final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     final textType = 'TEXT NOT NULL';
     final integerType = 'INTEGER NOT NULL';
 
-    await db.execute('''
-CREATE TABLE $tableNotes ( 
+      await _database!.execute('''
+CREATE TABLE $tableName ( 
   ${WordPairFields.id} $idType, 
   ${WordPairFields.numberSeen} $integerType,
   ${WordPairFields.baseWord} $textType,
@@ -38,26 +42,18 @@ CREATE TABLE $tableNotes (
 ''');
   }
 
-  Future<WordPair> addWordPair(WordPair note) async {
+  Future<WordPair> addWordPair(WordPair note, String tableName) async {
     final db = await instance.database;
 
-    // final json = note.toJson();
-    // final columns =
-    //     '${NoteFields.title}, ${NoteFields.description}, ${NoteFields.time}';
-    // final values =
-    //     '${json[NoteFields.title]}, ${json[NoteFields.description]}, ${json[NoteFields.time]}';
-    // final id = await db
-    //     .rawInsert('INSERT INTO table_name ($columns) VALUES ($values)');
-
-    final id = await db.insert(tableNotes, note.toJson());
+    final id = await db.insert(tableName, note.toJson());
     return note.copy(id: id);
   }
 
-  Future<WordPair> readWordPair(int id) async {
+  Future<WordPair> readWordPair(int id, String tableName) async {
     final db = await instance.database;
 
     final maps = await db.query(
-      tableNotes,
+      tableName,
       columns: WordPairFields.values,
       where: '${WordPairFields.id} = ?',
       whereArgs: [id],
@@ -70,34 +66,34 @@ CREATE TABLE $tableNotes (
     }
   }
 
-  Future<List<WordPair>> readAllWordPairs() async {
+  Future<List<WordPair>> readAllWordPairs(String tableName) async {
     final db = await instance.database;
 
     final orderBy = '${WordPairFields.baseWord} ASC';
     // final result =
     //     await db.rawQuery('SELECT * FROM $tableNotes ORDER BY $orderBy');
 
-    final result = await db.query(tableNotes, orderBy: orderBy);
+    final result = await db.query(tableName, orderBy: orderBy);
 
     return result.map((json) => WordPair.fromJson(json)).toList();
   }
 
-  Future<int> updateWordPair(WordPair note) async {
+  Future<int> updateWordPair(WordPair note, String tableName) async {
     final db = await instance.database;
 
     return db.update(
-      tableNotes,
+      tableName,
       note.toJson(),
       where: '${WordPairFields.id} = ?',
       whereArgs: [note.id],
     );
   }
 
-  Future<int> deleteWordPair(int id) async {
+  Future<int> deleteWordPair(int id, String tableName) async {
     final db = await instance.database;
 
     return await db.delete(
-      tableNotes,
+      tableName,
       where: '${WordPairFields.id} = ?',
       whereArgs: [id],
     );
