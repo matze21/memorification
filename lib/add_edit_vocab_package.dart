@@ -16,19 +16,39 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
   late List<WordPair> curWordPairList;
   late List<TableRow> tableRowList;
 
+  bool isLoading = true;
+
   @override
   void initState() {
-    super.initState();
-    curWordPairList = [];
-    tableRowList = [];
     getWordPairs();
+    super.initState();
+
   }
 
   Future getWordPairs() async {
-      curWordPairList = await VocabDatabase.instance.readAllWordPairs(
-          widget.tableName.getKey());
+    setState(() => isLoading = true);
+    curWordPairList = await VocabDatabase.instance.readAllWordPairs(widget.tableName.getKey());
+    setState(() => updateLocalTable());
+    setState(() => isLoading = false);
+  }
 
-      tableRowList = [
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      actions: [buildNewButton()],
+    ),
+    body: isLoading
+        ? Center(child: CircularProgressIndicator())
+        : curWordPairList.isEmpty
+        ? Center(child: Text(
+      'No vocab in this package', style: TextStyle(color: Colors.white, fontSize: 24),
+    ))
+        : Table(border: TableBorder.all(), children: this.tableRowList),
+  );
+
+  void updateLocalTable() {
+    setState(() {
+      this.tableRowList = [
         TableRow(children: [
           Column(children: [
             Text('ID', style: TextStyle(
@@ -53,48 +73,32 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
           ]),
         ])
       ];
-      for (WordPair wordPair in curWordPairList) {
-        tableRowList.add(
-            TableRow(children: [
-              Center(child: Text(wordPair.id.toString(), style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ))),
-              Center(child: Text(wordPair.baseWord, style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ))),
-              Center(child: Text(wordPair.translation, style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ))),
-            ])
-        );
+
+      if(curWordPairList.isNotEmpty) {
+        for (WordPair wordPair in curWordPairList) {
+          this.tableRowList.add(
+              TableRow(children: [
+                Center(child: Text(wordPair.id.toString(), style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ))),
+                Center(child: Text(wordPair.baseWord, style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ))),
+                Center(child: Text(wordPair.translation, style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ))),
+              ])
+          );
+        }
       }
+    });
   }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      actions: [buildNewButton()],
-    ),
-    body: Table(border: TableBorder.all(), children: tableRowList),
-    /*body: Editable(
-      columns: ['fist','second','# seen'],
-      rows: curWordPairList,
-      showCreateButton: true,
-      tdStyle: TextStyle(fontSize: 20),
-      showSaveIcon: false,
-      borderColor: Colors.grey.shade300,
-      onSubmitted: (value){ //new line
-        //print(value); //you can grab this data to store anywhere
-      },
-    ),*/
-  );
-
 
   Widget buildNewButton() {
     return Padding(
@@ -104,9 +108,9 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
           onPrimary: Colors.white,
           primary: Colors.grey.shade700,
         ),
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddWordPairPage(widget.tableName)),);
-          getWordPairs();
+        onPressed: () async {
+          await Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddWordPairPage(widget.tableName)),);
+          await getWordPairs();
         },
         child: Text('Add Pair'),
       ),

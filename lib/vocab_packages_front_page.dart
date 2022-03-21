@@ -12,7 +12,6 @@ class vocabPackagesPage extends StatefulWidget {
 }
 
 class _vocabPackagesPageState extends State<vocabPackagesPage> {
-  late List<WordPair> wordPairs;
   bool isLoading = false;
   bool isPackageExisting = false;
 

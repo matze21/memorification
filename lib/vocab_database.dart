@@ -78,6 +78,18 @@ CREATE TABLE $tableName (
     return result.map((json) => WordPair.fromJson(json)).toList();
   }
 
+/*  List<WordPair> readAllWordPairsStatic(String tableName) {
+    final Database db = _database!;
+
+    final orderBy = '${WordPairFields.baseWord} ASC';
+    // final result =
+    //     await db.rawQuery('SELECT * FROM $tableNotes ORDER BY $orderBy');
+
+    final result = db.query(tableName, orderBy: orderBy);
+
+    return result.map((json) => WordPair.fromJson(json)).toList();
+  }*/
+
   Future<int> updateWordPair(WordPair note, String tableName) async {
     final db = await instance.database;
 

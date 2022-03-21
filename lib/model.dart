@@ -7,7 +7,7 @@ class databaseKey {
   const databaseKey(this.base, this.second);
 
   String getKey(){
-    return base + ' ' + second;
+    return base + '_' + second;
   }
 }
 
