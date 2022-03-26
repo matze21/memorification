@@ -3,7 +3,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import './vocab_database.dart';
 import './model.dart';
 import './add_edit_vocab_package.dart';
-import './package_card_widget.dart';
 import './add_vocab_package_page.dart';
 
 class vocabPackagesPage extends StatefulWidget {
@@ -18,7 +17,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   @override
   void initState() {
     super.initState();
-    tableNames = [];
+    //tableNames = [];  // add predefined libraries?
 
     refreshVocabPackages();
   }
@@ -50,7 +49,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
         'Vocab Packages',
         style: TextStyle(fontSize: 24),
       ),
-      actions: [Icon(Icons.search), SizedBox(width: 12)],
+      //actions: [deleteVocabPackage()] //, Icon(Icons.search), SizedBox(width: 12)],
     ),
     body: Center(
       child: isLoading
@@ -93,8 +92,62 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
 
           refreshVocabPackages();
         },
-        child: NoteCardWidget(vocabPackage: package, index: index),
+        child: NoteCardWidget(package, index),
       );
     },
   );
+
+  Widget NoteCardWidget(databaseKey vocabPackage, int index){
+    final _lightColors = [Colors.amber.shade300, Colors.lightGreen.shade300, Colors.lightBlue.shade300, Colors.orange.shade300, Colors.pinkAccent.shade100, Colors.tealAccent.shade100];
+
+    /// Pick colors from the accent colors based on index
+    final color = _lightColors[index % _lightColors.length];
+    final minHeight = getMinHeight(index);
+
+    return Card(
+      color: color,
+      child: Container(
+        constraints: BoxConstraints(minHeight: minHeight),
+        padding: EdgeInsets.all(8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 4),
+            Text(
+              vocabPackage.getKey(),
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                tableNames.remove(vocabPackage);
+                refreshVocabPackages();
+              },
+              child: Icon(Icons.delete, size: 20.0,),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// To return different height for different widgets
+  double getMinHeight(int index) {
+    switch (index % 4) {
+      case 0:
+        return 100;
+      case 1:
+        return 150;
+      case 2:
+        return 150;
+      case 3:
+        return 100;
+      default:
+        return 100;
+    }
+  }
 }
