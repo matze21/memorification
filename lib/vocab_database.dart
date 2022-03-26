@@ -42,6 +42,11 @@ CREATE TABLE $tableName (
 ''');
   }
 
+  Future deleteDB(String tableName) async {
+    final db = await instance.database;
+    db.delete(tableName);
+  }
+
   Future<WordPair> addWordPair(WordPair note, String tableName) async {
     final db = await instance.database;
 

@@ -124,7 +124,8 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                tableNames.remove(vocabPackage);
+                tableNames.remove(vocabPackage); //only removes from visu
+                await VocabDatabase.instance.deleteDB(vocabPackage.getKey());
                 refreshVocabPackages();
               },
               child: Icon(Icons.delete, size: 20.0,),
