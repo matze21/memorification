@@ -71,6 +71,13 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
               fontWeight: FontWeight.bold,
             ))
           ]),
+          Column(children: [
+            Text(' ', style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ))
+          ]),
         ])
       ];
 
@@ -93,6 +100,7 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ))),
+                Center(child: deleteButton(wordPair.id!)),
               ])
           );
         }
@@ -115,6 +123,19 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         child: Text('Add Pair'),
       ),
     );
+  }
+
+  Widget deleteButton(int id) {
+    return ElevatedButton(
+        onPressed: () async {
+          await VocabDatabase.instance.deleteWordPair(id, widget.tableName.getKey());
+          await getWordPairs();
+        },
+        child: Icon(
+          Icons.delete,
+          size: 20.0,
+        ),
+      );
   }
 }
 
