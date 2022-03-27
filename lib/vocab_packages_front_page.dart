@@ -49,7 +49,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
         'Vocab Packages',
         style: TextStyle(fontSize: 24),
       ),
-      //actions: [deleteVocabPackage()] //, Icon(Icons.search), SizedBox(width: 12)],
+      actions: [findAllButton()] //, Icon(Icons.search), SizedBox(width: 12)],
     ),
     body: Center(
       child: isLoading
@@ -73,6 +73,16 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
       },
     ),
   );
+
+  Widget findAllButton() {
+    return ElevatedButton(
+      onPressed: () async {
+        tableNames = await VocabDatabase.instance.getAllExistingDataTables();
+        refreshVocabPackages();
+      },
+      child: Icon(Icons.search, size: 20.0,),
+    );
+  }
 
   Widget renderPackages() => StaggeredGridView.countBuilder(
     padding: EdgeInsets.all(8),

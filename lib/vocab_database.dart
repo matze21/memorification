@@ -44,7 +44,27 @@ CREATE TABLE $tableName (
 
   Future deleteDB(String tableName) async {
     final db = await instance.database;
-    db.delete(tableName);
+    await db.execute("DROP TABLE $tableName");
+    //db.delete(tableName);
+  }
+
+  Future<List<databaseKey>> getAllExistingDataTables() async {
+    final db = await instance.database;
+    var tables = (await db
+        .query('sqlite_master', where: 'type = ?', whereArgs: ['table']))
+        .map((row) => row['name'] as String)
+        .toList(growable: true);
+    tables.remove('android_metadata');
+    tables.remove('sqlite_sequence');
+    //final tables = await db.rawQuery('SELECT * FROM sqlite_master ORDER BY name;');
+    //return tables.map((json) => databaseKey.fromJson(json)).toList();
+    List<databaseKey> keys = [];
+
+    print(tables);
+    for(String table in tables) {
+        keys.add(databaseKey.getDataBaseKeyFromKey(table));
+      }
+    return keys;
   }
 
   Future<WordPair> addWordPair(WordPair note, String tableName) async {

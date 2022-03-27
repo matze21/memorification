@@ -1,14 +1,40 @@
 List<databaseKey> tableNames = [];  // for now only work with one language
 
+class databaseKeyFields {
+  static final List<String> values = [base, second];
+
+  static final String base = 'base';
+  static final String second = 'second';
+}
+
 class databaseKey {
   final String base;
   final String second;
 
-  const databaseKey(this.base, this.second);
+  const databaseKey({
+      required this.base,
+      required this.second});
+
+  static databaseKey getDataBaseKeyFromKey(String key){
+    int separateIdx = -1;
+    for(int i=0; i<key.length; i++) {
+        if(key[i] == '_'){
+          separateIdx = i;
+        }
+      }
+    String base = key.substring(0, separateIdx);
+    String second = key.substring(separateIdx+1, key.length);
+    return databaseKey(base: base, second: second);
+  }
 
   String getKey(){
     return base + '_' + second;
   }
+
+  static databaseKey fromJson(Map<String, Object?> json) => databaseKey(
+    base: json[databaseKeyFields.base] as String,
+    second: json[databaseKeyFields.second] as String,
+  );
 }
 
 class WordPairFields {
