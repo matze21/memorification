@@ -72,6 +72,21 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
         refreshVocabPackages();
       },
     ),
+    bottomNavigationBar: Container(
+        height: 60,
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+      child: Text(
+        (currentStudyPackage == null)
+            ? 'No package selected'
+            : 'Studying: ' + currentStudyPackage!.getKey()
+            , style: TextStyle(color: Colors.white, fontSize: 24)
+    )),
   );
 
   Widget findAllButton() {
@@ -81,6 +96,16 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
         refreshVocabPackages();
       },
       child: Icon(Icons.search, size: 20.0,),
+    );
+  }
+
+  Widget selectStudyPackage(databaseKey key) {
+    return ElevatedButton(
+      onPressed: () async {
+        currentStudyPackage = key;
+        refreshVocabPackages();
+      },
+      child: Text('study package'),
     );
   }
 
@@ -140,6 +165,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
               },
               child: Icon(Icons.delete, size: 20.0,),
             ),
+            selectStudyPackage(vocabPackage)
           ],
         ),
       ),

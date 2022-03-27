@@ -1,4 +1,5 @@
 List<databaseKey> tableNames = [];  // for now only work with one language
+databaseKey? currentStudyPackage = null;
 
 class databaseKeyFields {
   static final List<String> values = [base, second];
