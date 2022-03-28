@@ -86,7 +86,8 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
             ? 'No package selected'
             : 'Studying: ' + currentStudyPackage!.getKey()
             , style: TextStyle(color: Colors.white, fontSize: 24)
-    )),
+      )
+    ),
   );
 
   Widget findAllButton() {
