@@ -72,7 +72,8 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
         refreshVocabPackages();
       },
     ),
-    bottomNavigationBar: Container(
+
+    /*bottomNavigationBar: Container(
         height: 60,
         decoration: BoxDecoration(
           color: Theme.of(context).primaryColor,
@@ -86,7 +87,24 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
             ? 'No package selected'
             : 'Studying: ' + currentStudyPackage!.getKey()
             , style: TextStyle(color: Colors.white, fontSize: 24)
-      )
+      ),
+    ),*/
+    bottomNavigationBar: BottomAppBar(
+        color: Theme.of(context).primaryColor,
+        child: Row(children: [Container(width: 200, child: Text(
+            (currentStudyPackage == null)
+                ? 'No package selected'
+                : 'Studying: ' + currentStudyPackage!.getKey()
+            , style: TextStyle(color: Colors.white, fontSize: 18)
+          ),),
+          Container(width: 110, child: Text("Change notification Nr per Day: ", style: TextStyle(color: Colors.white, fontSize: 18))),
+          Positioned(right: 0,
+              child: Container( width: 50,
+                  child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text("10")
+          ))),
+        ]),
     ),
   );
 
