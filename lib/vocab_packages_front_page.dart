@@ -4,6 +4,9 @@ import './vocab_database.dart';
 import './model.dart';
 import './add_edit_vocab_package.dart';
 import './add_vocab_package_page.dart';
+import './notification_api.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 
 class vocabPackagesPage extends StatefulWidget {
   @override
@@ -13,12 +16,13 @@ class vocabPackagesPage extends StatefulWidget {
 class _vocabPackagesPageState extends State<vocabPackagesPage> {
   bool isLoading = false;
   bool isPackageExisting = false;
+  int notificationNr = 0;
 
   @override
   void initState() {
     super.initState();
     //tableNames = [];  // add predefined libraries?
-
+    NotificationApi.init(initScheduled: true);
     refreshVocabPackages();
   }
 
@@ -98,12 +102,41 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
             , style: TextStyle(color: Colors.white, fontSize: 18)
           ),),
           Container(width: 110, child: Text("Change notification Nr per Day: ", style: TextStyle(color: Colors.white, fontSize: 18))),
-          Positioned(right: 0,
-              child: Container( width: 50,
+          Container( width: 50,
                   child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text("10")
-          ))),
+                      onPressed: () async {
+                        setState(()  {
+                          notificationNr = notificationNr + 1;
+                          if(notificationNr == 11)
+                          {
+                              notificationNr = 0;
+                          }
+                        });
+
+                          if(currentStudyPackage != null && notificationNr > 0) {
+                            WordPair curWordPair = await VocabDatabase.instance.readWordPair(1, currentStudyPackage!.getKey());
+
+                            // display notification
+                            final now = DateTime.now();
+                            final double timeDiffMinutes = 14 * 60 /
+                                notificationNr; // 7:00 - 21:00
+                            double minute = 0;
+                            for (int i = 0; i < notificationNr; i++) {
+                              NotificationApi.showScheduledNotification(
+                                title: curWordPair.baseWord,
+                                body: curWordPair.translation,
+                                payload: curWordPair.numberSeen.toString(),
+                                scheduledTime: Time(now.hour, now.minute, now.second + 2),
+                                //7, 0 + minute.toInt(), 0),
+                              );
+                              minute = minute + timeDiffMinutes;
+                              WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
+                              VocabDatabase.instance.updateWordPair(updatedWordPair, currentStudyPackage!.getKey());
+                            }
+                          }
+                      },
+                      child: Text(notificationNr.toString())
+          )),
         ]),
     ),
   );
