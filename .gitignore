@@ -49,7 +49,7 @@ app.*.map.json
 eng-spa\.ipynb_checkpoints
 
 # all folders besides lib
-/android
+#/android
 #/build
 #/ios
 /web
