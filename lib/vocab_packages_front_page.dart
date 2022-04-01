@@ -114,7 +114,18 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
                         });
 
                           if(currentStudyPackage != null && notificationNr > 0) {
-                            WordPair curWordPair = await VocabDatabase.instance.readWordPair(1, currentStudyPackage!.getKey());
+                            final int curIdx = currentStudyPackage!.getCurrentId();
+                            WordPair curWordPair = await VocabDatabase.instance.readWordPair(curIdx, currentStudyPackage!.getKey());
+                            // get next idx
+                            if(curWordPair.numberSeen >= 2) {
+                                List<WordPair> wordPairs = await VocabDatabase.instance.readAllWordPairs(currentStudyPackage!.getKey());
+                                if(wordPairs.length == curIdx) {
+                                    currentStudyPackage!.setCurrentId(1);
+                                }
+                                else {
+                                    currentStudyPackage!.setCurrentId(curIdx + 1);
+                                }
+                            }
 
                             // display notification
                             final now = DateTime.now();
@@ -122,6 +133,8 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
                                 notificationNr; // 7:00 - 21:00
                             double minute = 0;
                             for (int i = 0; i < notificationNr; i++) {
+                              final int addedHours = (minute / 60).toInt();
+                              final int addedMinutes = (minute - addedHours * 60).toInt();
                               NotificationApi.showScheduledNotification(
                                 title: curWordPair.baseWord,
                                 body: curWordPair.translation,

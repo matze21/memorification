@@ -60,7 +60,7 @@ CREATE TABLE $tableName (
     //return tables.map((json) => databaseKey.fromJson(json)).toList();
     List<databaseKey> keys = [];
 
-    print(tables);
+    //print(tables);
     for(String table in tables) {
         keys.add(databaseKey.getDataBaseKeyFromKey(table));
       }
