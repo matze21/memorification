@@ -50,7 +50,7 @@ eng-spa\.ipynb_checkpoints
 
 # all folders besides lib
 /android
-/build
-/ios
+#/build
+#/ios
 /web
 /windows
