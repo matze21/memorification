@@ -139,8 +139,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
                                 title: curWordPair.baseWord,
                                 body: curWordPair.translation,
                                 payload: curWordPair.numberSeen.toString(),
-                                scheduledTime: Time(now.hour, now.minute, now.second + 2),
-                                //7, 0 + minute.toInt(), 0),
+                                scheduledTime: Time(7 + addedHours, addedMinutes, 0),
                               );
                               minute = minute + timeDiffMinutes;
                               WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
