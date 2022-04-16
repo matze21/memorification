@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 
 class vocabPackagesPage extends StatefulWidget {
+  const vocabPackagesPage({Key? key}) : super(key: key);
   @override
   _vocabPackagesPageState createState() => _vocabPackagesPageState();
 }
@@ -49,9 +50,19 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(
-        'Vocab Packages',
-        style: TextStyle(fontSize: 24),
+      title: Table(children:
+        [TableRow(
+          children: [Text('Vocab Packages',
+            style: TextStyle(fontSize: 24),)],
+          ),
+        TableRow(
+          children: [Container(width: 200, child: Text(
+              (currentStudyPackage == null)
+                  ? 'No package selected for studying'
+                  : 'Studying: ' + currentStudyPackage!.getKey()
+              , style: TextStyle(color: Colors.white, fontSize: 18)
+          ),)],),
+        ]
       ),
       actions: [findAllButton()] //, Icon(Icons.search), SizedBox(width: 12)],
     ),
@@ -75,81 +86,6 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
 
         refreshVocabPackages();
       },
-    ),
-
-    /*bottomNavigationBar: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-      child: Text(
-        (currentStudyPackage == null)
-            ? 'No package selected'
-            : 'Studying: ' + currentStudyPackage!.getKey()
-            , style: TextStyle(color: Colors.white, fontSize: 24)
-      ),
-    ),*/
-    bottomNavigationBar: BottomAppBar(
-        color: Theme.of(context).primaryColor,
-        child: Row(children: [Container(width: 200, child: Text(
-            (currentStudyPackage == null)
-                ? 'No package selected'
-                : 'Studying: ' + currentStudyPackage!.getKey()
-            , style: TextStyle(color: Colors.white, fontSize: 18)
-          ),),
-          Container(width: 110, child: Text("Change notification Nr per Day: ", style: TextStyle(color: Colors.white, fontSize: 18))),
-          Container( width: 50,
-                  child: ElevatedButton(
-                      onPressed: () async {
-                        setState(()  {
-                          notificationNr = notificationNr + 1;
-                          if(notificationNr == 11)
-                          {
-                              notificationNr = 0;
-                          }
-                        });
-
-                          if(currentStudyPackage != null && notificationNr > 0) {
-                            final int curIdx = currentStudyPackage!.getCurrentId();
-                            WordPair curWordPair = await VocabDatabase.instance.readWordPair(curIdx, currentStudyPackage!.getKey());
-                            // get next idx
-                            if(curWordPair.numberSeen >= 2) {
-                                List<WordPair> wordPairs = await VocabDatabase.instance.readAllWordPairs(currentStudyPackage!.getKey());
-                                if(wordPairs.length == curIdx) {
-                                    currentStudyPackage!.setCurrentId(1);
-                                }
-                                else {
-                                    currentStudyPackage!.setCurrentId(curIdx + 1);
-                                }
-                            }
-
-                            // display notification
-                            final now = DateTime.now();
-                            final double timeDiffMinutes = 14 * 60 /
-                                notificationNr; // 7:00 - 21:00
-                            double minute = 0;
-                            for (int i = 0; i < notificationNr; i++) {
-                              final int addedHours = (minute / 60).toInt();
-                              final int addedMinutes = (minute - addedHours * 60).toInt();
-                              NotificationApi.showScheduledNotification(
-                                title: curWordPair.baseWord,
-                                body: curWordPair.translation,
-                                payload: curWordPair.numberSeen.toString(),
-                                scheduledTime: Time(7 + addedHours, addedMinutes, 0),
-                              );
-                              minute = minute + timeDiffMinutes;
-                              WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
-                              VocabDatabase.instance.updateWordPair(updatedWordPair, currentStudyPackage!.getKey());
-                            }
-                          }
-                      },
-                      child: Text(notificationNr.toString())
-          )),
-        ]),
     ),
   );
 

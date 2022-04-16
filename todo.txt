@@ -1,0 +1,28 @@
+Memorification ToDO:
+
+git token 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
+app specific PW vxdp-ttlp-kxwl-wieo
+
+Datatables:
+- make suggestions for new words disappear once clicking
+- make datatable editable
+- new datapair also by clicking enter in last column
+- make datatable scrollable
+- new column: numbers shown
+- add button, re-learn
+- add option, num. of notifications for word
+
+Notifications:
+- create separete settings page for # notifications/day & time interval
+- random testing of words (array of index)
+
+Databases:
+- import database from quizzlet
+- import database from duolingo
+- make database more than local
+
+
+Down the line:
+- create user profile
+- server to store datasets & users
+- adds

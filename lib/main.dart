@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import './vocab_packages_front_page.dart';
+import './home_page.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +28,6 @@ class MyApp extends StatelessWidget {
         elevation: 0,
       ),
     ),
-    home: vocabPackagesPage(),
+    home: HomePage(),
   );
 }
