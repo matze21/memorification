@@ -9,16 +9,10 @@ class Page2 extends StatefulWidget {
 
 class _MyPage2State extends State<Page2> {
   // Initial Selected Value
-  String dropdownvalue = 'Item 1';
+  int dropdownvalue = 1;
 
   // List of items in our dropdown menu
-  var items = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
+  var items = [1, 2, 3, 4, 5,6 ,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
 
   @override
   Widget build(BuildContext context) {
@@ -34,29 +28,24 @@ class _MyPage2State extends State<Page2> {
               Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                DropdownButton(
-                  dropdownColor: Colors.black,
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                  // Initial Value
-                  value: dropdownvalue,
-                  // Down Arrow Icon
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  // Array list of items
-                  items: items.map((String items) {
-                    return DropdownMenuItem(
-                      value: items,
-                      child: Text(items),
+              DropdownButton<int>(
+                dropdownColor: Colors.black,
+                style: TextStyle(color: Colors.white, fontSize: 18),
+                hint: Text("Pick"),
+                icon: const Icon(Icons.keyboard_arrow_down),
+                value: dropdownvalue,
+                items: <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((int value) {
+                  return DropdownMenuItem<int>(
+                    value: value,
+                    child: Text(value.toString()),
                     );
                   }).toList(),
-                  // After selecting the desired option,it will
-                  // change button value to selected value
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownvalue = newValue!;
+                onChanged: (newVal) {
+                  setState(() {
+                    dropdownvalue = newVal!;
                     });
-                  },
-                ),
-              ]
+                  }
+                  )]
               )
             ]
           )
