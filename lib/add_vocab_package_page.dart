@@ -22,8 +22,8 @@ class _AddVocabPackagePageState extends State<AddVocabPackagePage> {
   void initState() {
     super.initState();
 
-    controllerFirst = TextEditingController(text: 'first');
-    controllerSecond = TextEditingController(text: 'second');
+    controllerFirst = TextEditingController();
+    controllerSecond = TextEditingController();
   }
 
   @override
@@ -32,7 +32,8 @@ class _AddVocabPackagePageState extends State<AddVocabPackagePage> {
     content: Table(children: [
       TableRow(children: [
         TextField(
-          controller: controllerFirst,
+          controller: controllerFirst..text = 'first',
+          onTap: () {controllerFirst.clear(); },
           decoration: InputDecoration(
             border: OutlineInputBorder(),
           ),
@@ -40,7 +41,8 @@ class _AddVocabPackagePageState extends State<AddVocabPackagePage> {
        ),
       TableRow(children: [
         TextField(
-          controller: controllerSecond,
+          controller: controllerSecond..text = 'second',
+          onTap: () {controllerSecond.clear(); },
           decoration: InputDecoration(
             border: OutlineInputBorder(),
           ),

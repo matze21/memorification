@@ -230,7 +230,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
           children: [
             SizedBox(height: 4),
             Text(
-              vocabPackage.getKey(),
+              vocabPackage.base + ' ' + vocabPackage.second,
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 20,

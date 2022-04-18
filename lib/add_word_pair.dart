@@ -18,8 +18,8 @@ class _AddWordPairState extends State<AddWordPairPage> {
   @override
   void initState() {
     super.initState();
-    controllerBase = TextEditingController(text: widget.tableName.base);
-    controllerTransl = TextEditingController(text: widget.tableName.second);
+    controllerBase = TextEditingController();
+    controllerTransl = TextEditingController();
   }
 
   @override
@@ -28,7 +28,8 @@ class _AddWordPairState extends State<AddWordPairPage> {
     content: Table(children: [
       TableRow(children: [
         TextField(
-          controller: controllerBase,
+          controller: controllerBase..text = widget.tableName.base,
+          onTap: () {controllerBase.clear(); },
           decoration: InputDecoration(
             border: OutlineInputBorder(),
           ),
@@ -37,7 +38,8 @@ class _AddWordPairState extends State<AddWordPairPage> {
       ),
       TableRow(children: [
         TextField(
-          controller: controllerTransl,
+          controller: controllerTransl..text = widget.tableName.second,
+          onTap: () {controllerTransl.clear(); },
           decoration: InputDecoration(
             border: OutlineInputBorder(),
           ),
