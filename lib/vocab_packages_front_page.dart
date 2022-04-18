@@ -25,6 +25,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     super.initState();
     //tableNames = [];  // add predefined libraries?
     NotificationApi.init(initScheduled: true);
+    VocabDatabase.initInstance();
     refreshVocabPackages();
   }
 
@@ -241,7 +242,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
               onPressed: () async {
                 tableNames.remove(vocabPackage); //only removes from visu
                 await VocabDatabase.instance.deleteDB(vocabPackage.getKey());
-                if(vocabPackage == currentStudyPackage!){ //reset the pointer to the study package if we delete the current one
+                if((currentStudyPackage != null) && (vocabPackage == currentStudyPackage!)){ //reset the pointer to the study package if we delete the current one
                   setState(() {
                     currentStudyPackage = null;
                   });
