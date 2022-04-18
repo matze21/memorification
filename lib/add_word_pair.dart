@@ -24,7 +24,7 @@ class _AddWordPairState extends State<AddWordPairPage> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: Text(widget.tableName.getKey()),
+    title: Text(widget.tableName.base + ' ' + widget.tableName.second),
     content: Table(children: [
       TableRow(children: [
         TextField(

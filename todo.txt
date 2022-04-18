@@ -4,16 +4,13 @@ git token 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
 app specific PW vxdp-ttlp-kxwl-wieo
 
 Datatables:
-- make suggestions for new words disappear once clicking
-- make datatable editable
+- automatically adapt font size depending on how much text we add
 - new datapair also by clicking enter in last column
-- make datatable scrollable
 - new column: numbers shown
 - add button, re-learn
 - add option, num. of notifications for word
 
 Notifications:
-- create separete settings page for # notifications/day & time interval
 - random testing of words (array of index)
 
 Databases:
