@@ -45,18 +45,27 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         ? Center(child: Text(
       'No vocab in this package', style: TextStyle(color: Colors.white, fontSize: 24),
     ))
-        : ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
-          PointerDeviceKind.touch
-        }),
-        child: Table(
-        columnWidths: {
-          0: FlexColumnWidth(2),
-          1: FlexColumnWidth(3),
-          2: FlexColumnWidth(3),
-          3: FlexColumnWidth(2),
-        },
-        border: TableBorder.all(), children: this.tableRowList)),
+        : Scrollbar(
+        thickness: 10,
+        isAlwaysShown: true,
+        radius: const Radius.circular(10), // give the thumb rounded corners
+        child: ListView.builder(
+          itemCount: this.tableRowList.length, // Don't forget this line
+          itemBuilder: (context, index) => Table(
+              border: TableBorder.all(),
+              key: ValueKey(this.tableRowList[index]),
+              columnWidths: {
+                0: FlexColumnWidth(1),
+                1: FlexColumnWidth(3),
+                2: FlexColumnWidth(3),
+                3: FlexColumnWidth(1),
+              },
+              children: [this.tableRowList[index]],
+          ),
+        ),
+        )
+        //child:
+        //border: TableBorder.all(), children: this.tableRowList)),
   );
 
   void updateLocalTable() {
@@ -98,11 +107,9 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         for (WordPair wordPair in curWordPairList) {
           this.tableRowList.add(
               TableRow(children: [
-                Text(wordPair.id.toString(), style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                )),
+                Center(child: Text(wordPair.id.toString(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold,))),
                 TextField(
                   controller: TextEditingController()..text = wordPair.baseWord,
                   style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold,),
