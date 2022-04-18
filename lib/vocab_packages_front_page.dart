@@ -6,6 +6,7 @@ import './add_edit_vocab_package.dart';
 import './add_vocab_package_page.dart';
 import './notification_api.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'settings_page.dart';
 
 
 class vocabPackagesPage extends StatefulWidget {
@@ -64,7 +65,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
           ),)],),
         ]
       ),
-      actions: [findAllButton()] //, Icon(Icons.search), SizedBox(width: 12)],
+      actions: [testNotifications(), findAllButton()] //, Icon(Icons.search), SizedBox(width: 12)],
     ),
     body: Center(
       child: isLoading
@@ -99,6 +100,83 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     );
   }
 
+  Widget testNotifications() {
+    return ElevatedButton(
+      onPressed: () async {
+        if(currentStudyPackage != null) {
+          final int curIdx = currentStudyPackage!.getCurrentId();
+          WordPair curWordPair = await VocabDatabase.instance.readWordPair(
+               curIdx, (currentStudyPackage!).getKey());
+          // get next idx
+          if (curWordPair.numberSeen >= 2) {
+            List<WordPair> wordPairs = await VocabDatabase.instance
+                .readAllWordPairs(currentStudyPackage!.getKey());
+            if (wordPairs.length == curIdx) {
+              currentStudyPackage!.setCurrentId(1);
+            }
+            else {
+              currentStudyPackage!.setCurrentId(curIdx + 1);
+            }
+          }
+
+          //print(curWordPair.baseWord);
+
+          final now = DateTime.now();
+          // NotificationApi.showScheduledNotification(
+          //   title: curWordPair.baseWord,
+          //   body: curWordPair.translation,
+          //   payload: curWordPair.numberSeen.toString(),
+          //   scheduledTime: Time(now.hour, now.minute, now.second + 10),
+          // );
+          NotificationApi.showScheduledNotification(
+            title: curWordPair.baseWord,
+            body: curWordPair.translation,
+            payload: curWordPair.numberSeen.toString(),
+            scheduledTime: Time(now.hour, now.minute, now.second + 10),
+          );
+        }
+      },
+      child: Text('Test' + snotificationNr.toString()),
+    );
+  }
+
+  void scheduleNotifications() async {
+    if (currentStudyPackage != null && snotificationNr > 0) {
+      final int curIdx = currentStudyPackage!.getCurrentId();
+      WordPair curWordPair = await VocabDatabase.instance.readWordPair(
+          curIdx, currentStudyPackage!.getKey());
+      // get next idx
+      if (curWordPair.numberSeen >= 2) {
+        List<WordPair> wordPairs = await VocabDatabase.instance
+            .readAllWordPairs(currentStudyPackage!.getKey());
+        if (wordPairs.length == curIdx) {
+          currentStudyPackage!.setCurrentId(1);
+        }
+        else {
+          currentStudyPackage!.setCurrentId(curIdx + 1);
+        }
+      }
+
+      final now = DateTime.now();
+      final double timeDiffMinutes = (sendTime - sstartTime) * 60 /
+          snotificationNr; // 7:00 - 21:00
+      double minute = 0;
+      for (int i = 0; i < snotificationNr; i++) {
+        final int addedHours = (minute / 60).toInt();
+        final int addedMinutes = (minute - addedHours * 60).toInt();
+        NotificationApi.showScheduledNotification(
+          title: curWordPair.baseWord,
+          body: curWordPair.translation,
+          payload: curWordPair.numberSeen.toString(),
+          scheduledTime: Time(Page2.getStartTime() + addedHours, addedMinutes, 0),
+        );
+        minute = minute + timeDiffMinutes;
+        WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
+        VocabDatabase.instance.updateWordPair(updatedWordPair, currentStudyPackage!.getKey());
+      }
+    }
+  }
+
   Widget selectStudyPackage(databaseKey key) {
     return ElevatedButton(
       onPressed: () async {
@@ -118,6 +196,8 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     crossAxisSpacing: 4,
     itemBuilder: (context, index) {
       final databaseKey package = tableNames[index];
+
+      //scheduleNotifications();
 
       return GestureDetector(
         onTap: () async {
@@ -161,6 +241,12 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
               onPressed: () async {
                 tableNames.remove(vocabPackage); //only removes from visu
                 await VocabDatabase.instance.deleteDB(vocabPackage.getKey());
+                if(vocabPackage == currentStudyPackage!){ //reset the pointer to the study package if we delete the current one
+                  setState(() {
+                    currentStudyPackage = null;
+                  });
+
+                }
                 refreshVocabPackages();
               },
               child: Icon(Icons.delete, size: 20.0,),

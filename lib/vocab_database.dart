@@ -77,6 +77,10 @@ CREATE TABLE $tableName (
   Future<WordPair> readWordPair(int id, String tableName) async {
     final db = await instance.database;
 
+    print(tableName);
+    print(WordPairFields.values);
+    print(WordPairFields.id);
+    print(id);
     final maps = await db.query(
       tableName,
       columns: WordPairFields.values,

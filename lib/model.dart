@@ -28,7 +28,7 @@ class databaseKey {
       }
     String base = key.substring(0, separateIdx);
     String second = key.substring(separateIdx+1, key.length);
-    return databaseKey(base: base, second: second, curIndex: 0);
+    return databaseKey(base: base, second: second, curIndex: 1);
   }
 
   int getCurrentId() { return curIndex;}
