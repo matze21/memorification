@@ -43,7 +43,14 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         ? Center(child: Text(
       'No vocab in this package', style: TextStyle(color: Colors.white, fontSize: 24),
     ))
-        : Table(border: TableBorder.all(), children: this.tableRowList),
+        : Table(
+        columnWidths: {
+          0: FlexColumnWidth(2),
+          1: FlexColumnWidth(3),
+          2: FlexColumnWidth(3),
+          3: FlexColumnWidth(2),
+        },
+        border: TableBorder.all(), children: this.tableRowList),
   );
 
   void updateLocalTable() {
@@ -85,21 +92,27 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         for (WordPair wordPair in curWordPairList) {
           this.tableRowList.add(
               TableRow(children: [
-                Center(child: Text(wordPair.id.toString(), style: TextStyle(
+                Text(wordPair.id.toString(), style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                ))),
-                Center(child: Text(wordPair.baseWord, style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ))),
-                Center(child: Text(wordPair.translation, style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ))),
+                )),
+                TextField(
+                  controller: TextEditingController()..text = wordPair.baseWord,
+                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold,),
+                  onSubmitted: (value) {
+                    wordPair.updateBase(value);
+                    VocabDatabase.instance.updateWordPair(wordPair, widget.tableName.getKey());
+                  },
+                ),
+                TextField(
+                  controller: TextEditingController()..text = wordPair.translation,
+                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold,),
+                  onSubmitted: (value) {
+                    wordPair.updateTranslation(value);
+                    VocabDatabase.instance.updateWordPair(wordPair, widget.tableName.getKey());
+                  },
+                ),
                 Center(child: deleteButton(wordPair.id!)),
               ])
           );
@@ -127,7 +140,11 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
 
   Widget deleteButton(int id) {
     return ElevatedButton(
-        onPressed: () async {
+      style: ElevatedButton.styleFrom(
+        onPrimary: Colors.white,
+        primary: Colors.grey.shade700,
+      ),
+      onPressed: () async {
           await VocabDatabase.instance.deleteWordPair(id, widget.tableName.getKey());
           await getWordPairs();
         },

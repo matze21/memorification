@@ -60,15 +60,18 @@ class WordPairFields {
 class WordPair {
   final int? id;
   final int numberSeen;
-  final String baseWord;
-  final String translation;
+  String baseWord;
+  String translation;
 
-  const WordPair({
+  WordPair({
     this.id,
     required this.numberSeen,
     required this.baseWord,
     required this.translation,
   });
+
+  void updateBase(String newBase) {this.baseWord = newBase;}
+  void updateTranslation(String newTrans) {this.translation = newTrans;}
 
   WordPair copy({
     int? id,
