@@ -50,7 +50,7 @@ CREATE TABLE $tableName (
     //db.delete(tableName);
   }
 
-  Future<List<databaseKey>> getAllExistingDataTables() async {
+  Future getAllExistingDataTables() async {
     final db = await instance.database;
     var tables = (await db
         .query('sqlite_master', where: 'type = ?', whereArgs: ['table']))
@@ -60,13 +60,12 @@ CREATE TABLE $tableName (
     tables.remove('sqlite_sequence');
     //final tables = await db.rawQuery('SELECT * FROM sqlite_master ORDER BY name;');
     //return tables.map((json) => databaseKey.fromJson(json)).toList();
-    List<databaseKey> keys = [];
 
+    tableNames = [];
     //print(tables);
     for(String table in tables) {
-        keys.add(databaseKey.getDataBaseKeyFromKey(table));
+      tableNames.add(databaseKey.getDataBaseKeyFromKey(table));
       }
-    return keys;
   }
 
   Future<WordPair> addWordPair(WordPair note, String tableName) async {

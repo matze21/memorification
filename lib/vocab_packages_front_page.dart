@@ -40,7 +40,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     setState(() => isLoading = true);
 
     await VocabDatabase.initInstance();
-
+    VocabDatabase.instance.getAllExistingDataTables();
     if(tableNames.isNotEmpty)
       {
         setState(() => isPackageExisting = true);
@@ -94,7 +94,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   Widget findAllButton() {
     return ElevatedButton(
       onPressed: () async {
-        tableNames = await VocabDatabase.instance.getAllExistingDataTables();
+        await VocabDatabase.instance.getAllExistingDataTables();
         refreshVocabPackages();
       },
       child: Icon(Icons.search, size: 20.0,),
