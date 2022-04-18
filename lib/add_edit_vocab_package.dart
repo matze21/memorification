@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import './model.dart';
 import './vocab_database.dart';
@@ -43,14 +45,18 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         ? Center(child: Text(
       'No vocab in this package', style: TextStyle(color: Colors.white, fontSize: 24),
     ))
-        : Table(
+        : ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
+          PointerDeviceKind.touch
+        }),
+        child: Table(
         columnWidths: {
           0: FlexColumnWidth(2),
           1: FlexColumnWidth(3),
           2: FlexColumnWidth(3),
           3: FlexColumnWidth(2),
         },
-        border: TableBorder.all(), children: this.tableRowList),
+        border: TableBorder.all(), children: this.tableRowList)),
   );
 
   void updateLocalTable() {
