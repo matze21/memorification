@@ -17,6 +17,7 @@ class AddEditPackagePage extends StatefulWidget {
 class _AddEditPackagePageState extends State<AddEditPackagePage> {
   late List<WordPair> curWordPairList;
   late List<TableRow> tableRowList;
+  final double fontSize = 16;
 
   bool isLoading = true;
 
@@ -109,10 +110,10 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
               TableRow(children: [
                 Center(child: Text(wordPair.id.toString(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold,))),
+                    style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold,))),
                 TextField(
                   controller: TextEditingController()..text = wordPair.baseWord,
-                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold,),
+                  style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold,),
                   onSubmitted: (value) {
                     wordPair.updateBase(value);
                     VocabDatabase.instance.updateWordPair(wordPair, widget.tableName.getKey());
@@ -120,7 +121,7 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
                 ),
                 TextField(
                   controller: TextEditingController()..text = wordPair.translation,
-                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold,),
+                  style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold,),
                   onSubmitted: (value) {
                     wordPair.updateTranslation(value);
                     VocabDatabase.instance.updateWordPair(wordPair, widget.tableName.getKey());
