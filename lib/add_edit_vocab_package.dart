@@ -159,6 +159,9 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         primary: Colors.grey.shade700,
       ),
       onPressed: () async {
+          if(currentStudyPackage != null && currentStudyPackage!.getCurrentId() == id) {
+            currentStudyPackage = null;  // reset current study package
+          }
           await VocabDatabase.instance.deleteWordPair(id, widget.tableName.getKey());
           await getWordPairs();
         },

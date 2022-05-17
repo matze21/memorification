@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import './vocab_database.dart';
@@ -25,22 +26,19 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     super.initState();
     //tableNames = [];  // add predefined libraries?
     NotificationApi.init(initScheduled: true);
-    VocabDatabase.initInstance();
     refreshVocabPackages();
   }
 
   @override
   void dispose() {
-    VocabDatabase.instance.close();
-
     super.dispose();
   }
 
   Future refreshVocabPackages() async {
     setState(() => isLoading = true);
 
-    await VocabDatabase.initInstance();
-    VocabDatabase.instance.getAllExistingDataTables();
+    await VocabDatabase.instance.getAllExistingDataTables();
+    await scheduleNotifications();
     if(tableNames.isNotEmpty)
       {
         setState(() => isPackageExisting = true);
@@ -104,8 +102,9 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   Widget testNotifications() {
     return ElevatedButton(
       onPressed: () async {
-        if(currentStudyPackage != null) {
+        if(currentStudyPackage != null && tableNames.contains(currentStudyPackage!)) {
           final int curIdx = currentStudyPackage!.getCurrentId();
+          final String key = (currentStudyPackage!).getKey();
           WordPair curWordPair = await VocabDatabase.instance.readWordPair(
                curIdx, (currentStudyPackage!).getKey());
           // get next idx
@@ -120,15 +119,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
             }
           }
 
-          //print(curWordPair.baseWord);
-
           final now = DateTime.now();
-          // NotificationApi.showScheduledNotification(
-          //   title: curWordPair.baseWord,
-          //   body: curWordPair.translation,
-          //   payload: curWordPair.numberSeen.toString(),
-          //   scheduledTime: Time(now.hour, now.minute, now.second + 10),
-          // );
           NotificationApi.showScheduledNotification(
             title: curWordPair.baseWord,
             body: curWordPair.translation,
@@ -141,8 +132,8 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     );
   }
 
-  void scheduleNotifications() async {
-    if (currentStudyPackage != null && snotificationNr > 0) {
+  Future scheduleNotifications() async {
+    if (currentStudyPackage != null && snotificationNr > 0 && tableNames.contains(currentStudyPackage!)) {
       final int curIdx = currentStudyPackage!.getCurrentId();
       WordPair curWordPair = await VocabDatabase.instance.readWordPair(
           curIdx, currentStudyPackage!.getKey());
@@ -198,15 +189,13 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     itemBuilder: (context, index) {
       final databaseKey package = tableNames[index];
 
-      //scheduleNotifications();
-
       return GestureDetector(
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => AddEditPackagePage(package),
           ));
 
-          refreshVocabPackages();
+          await refreshVocabPackages();
         },
         child: NoteCardWidget(package, index),
       );
@@ -242,13 +231,10 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
               onPressed: () async {
                 tableNames.remove(vocabPackage); //only removes from visu
                 await VocabDatabase.instance.deleteDB(vocabPackage.getKey());
-                if((currentStudyPackage != null) && (vocabPackage == currentStudyPackage!)){ //reset the pointer to the study package if we delete the current one
-                  setState(() {
+                if((currentStudyPackage != null) && (vocabPackage.getCurrentId() == currentStudyPackage!.getCurrentId())) { //reset the pointer to the study package if we delete the current one
                     currentStudyPackage = null;
-                  });
-
                 }
-                refreshVocabPackages();
+                await refreshVocabPackages();
               },
               child: Icon(Icons.delete, size: 20.0,),
             ),

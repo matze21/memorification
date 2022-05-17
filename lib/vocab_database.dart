@@ -23,10 +23,6 @@ class VocabDatabase {
     return await openDatabase(path, version: 1); //, onCreate: _createDB);
   }
 
-  static Future initInstance() async {
-    final db = await instance.database;
-  }
-
   static Future createDB(String tableName) async {
     final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     final textType = 'TEXT NOT NULL';
