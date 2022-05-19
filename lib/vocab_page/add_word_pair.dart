@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './model.dart';
-import './vocab_database.dart';
+import '/database/model.dart';
+import '/database/vocab_database.dart';
 
 class AddWordPairPage extends StatefulWidget {
   const AddWordPairPage(this.tableName);

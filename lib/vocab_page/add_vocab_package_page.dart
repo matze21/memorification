@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import './vocab_database.dart';
-import './model.dart';
-import './add_edit_vocab_package.dart';
+import '/database/vocab_database.dart';
+import '/database/model.dart';
+import 'add_edit_vocab_package.dart';
 
 class AddVocabPackagePage extends StatefulWidget {
 

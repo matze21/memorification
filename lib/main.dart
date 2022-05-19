@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import './home_page.dart';
+import 'front_page/home_page.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();

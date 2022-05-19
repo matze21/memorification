@@ -2,9 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import './model.dart';
-import './vocab_database.dart';
-import './add_word_pair.dart';
+import '/database/model.dart';
+import '/database/vocab_database.dart';
+import 'add_word_pair.dart';
 
 class AddEditPackagePage extends StatefulWidget {
   const AddEditPackagePage(this.tableName);

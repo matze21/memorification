@@ -1,13 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import './vocab_database.dart';
-import './model.dart';
-import './add_edit_vocab_package.dart';
-import './add_vocab_package_page.dart';
-import './notification_api.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'settings_page.dart';
+
+import '/database/vocab_database.dart';
+import '/database/model.dart';
+import '/vocab_page//add_edit_vocab_package.dart';
+import '/vocab_page/add_vocab_package_page.dart';
+import '/notifications/notification_api.dart';
+import '/notifications//settings_page.dart';
+
 
 
 class vocabPackagesPage extends StatefulWidget {
@@ -84,7 +86,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
           MaterialPageRoute(builder: (context) => AddVocabPackagePage()),
         );
 
-        refreshVocabPackages();
+        await refreshVocabPackages();
       },
     ),
   );
@@ -93,7 +95,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     return ElevatedButton(
       onPressed: () async {
         await VocabDatabase.instance.getAllExistingDataTables();
-        refreshVocabPackages();
+        await refreshVocabPackages();
       },
       child: Icon(Icons.search, size: 20.0,),
     );
