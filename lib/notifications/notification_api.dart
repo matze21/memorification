@@ -42,9 +42,11 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) => Scaffold();
 }*/
 
+const int MAX_NUM_NOTIFICATIONS = 60;
+
 class NotificationApi {
-  static final _notifications = FlutterLocalNotificationsPlugin();
-  static final onNotifications = BehaviorSubject<String?>();
+  static final _notifications  = List<FlutterLocalNotificationsPlugin>.filled(MAX_NUM_NOTIFICATIONS, FlutterLocalNotificationsPlugin());
+  static final onNotifications = List<BehaviorSubject>.filled(MAX_NUM_NOTIFICATIONS, BehaviorSubject<String?>());
 
   static Future _notificationDetails() async {
     return NotificationDetails(
@@ -60,21 +62,23 @@ class NotificationApi {
 
   static Future showNotification({
     int id = 0,
+    int notID = 0,
     String? title,
     String? body,
     String? payload,
-}) async => _notifications.show(
+}) async => _notifications[notID].show(
     id, title, body, await _notificationDetails(), payload: payload,
   );
 
   static Future showScheduledNotification({
     int id = 0,
+    int notID = 0,
     String? title,
     String? body,
     String? payload,
     //required DateTime scheduleDate,
     required Time scheduledTime, // e.g. Time(8) = 8 am
-  }) async => _notifications.zonedSchedule(
+  }) async => _notifications[notID].zonedSchedule(
     id, title, body,
     _scheduleDaily(scheduledTime),  //tz.TZDateTime.from(scheduleDate, tz.local),
     await _notificationDetails(), payload: payload,
@@ -98,11 +102,14 @@ class NotificationApi {
     final iOS = IOSInitializationSettings();
     final settings = InitializationSettings(android: android, iOS: iOS);
 
-    await _notifications.initialize(settings,
-      onSelectNotification: (payload) async {
-        onNotifications.add(payload);
-      },
-    );
+    for(int i = 0; i < MAX_NUM_NOTIFICATIONS; i++) {
+      await _notifications[i].initialize(settings,
+        onSelectNotification: (payload) async {
+          onNotifications[i].add(payload);
+        },
+      );
+    }
+
 
     if(initScheduled) {
       tz.initializeTimeZones();

@@ -23,6 +23,7 @@ class _MyPage2State extends State<Page2> {
   late int numNot = 1;
   late int startT = 6;
   late int endT = 18;
+  final List<int> notificationNumbers = List<int>.generate(MAX_NUM_NOTIFICATIONS, (k) => k + 1);
 
   @override
   void initState() {
@@ -76,7 +77,7 @@ class _MyPage2State extends State<Page2> {
                 hint: Text("Pick"),
                 icon: const Icon(Icons.keyboard_arrow_down),
                 value: numNot,
-                items: <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,15,16,17,18,19,20].map((int value) {
+                items: notificationNumbers.map((int value) {
                   return DropdownMenuItem<int>(
                     value: value,
                     child: Text(value.toString()),
@@ -117,6 +118,9 @@ class _MyPage2State extends State<Page2> {
                           onChanged: (newVal) async {
                             setState(() {
                               startT = (newVal!);
+                              if(startT>endT && startT != 23){
+                                endT = startT +1;
+                              }
                             });
                             final prefs = await SharedPreferences.getInstance();
                             prefs.setInt('startT', startT);
@@ -149,6 +153,9 @@ class _MyPage2State extends State<Page2> {
                           onChanged: (newVal) async {
                             setState(() {
                               endT = newVal!;
+                              if(startT>endT && endT != 0){
+                                startT = endT - 1;
+                              }
                             });
                             final prefs = await SharedPreferences.getInstance();
                             prefs.setInt('endT', endT);
@@ -233,6 +240,7 @@ class _MyPage2State extends State<Page2> {
         // if notification - increment key once it's displayed, once you hit the number use next one
 
         NotificationApi.showScheduledNotification(
+          notID: i,
           title: curWordPair.baseWord,
           body: curWordPair.translation,
           payload: curWordPair.numberSeen.toString(),
