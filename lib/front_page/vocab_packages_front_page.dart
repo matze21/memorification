@@ -7,8 +7,7 @@ import '/database/vocab_database.dart';
 import '/database/model.dart';
 import '/vocab_page//add_edit_vocab_package.dart';
 import '/vocab_page/add_vocab_package_page.dart';
-import '/notifications/notification_api.dart';
-import '/notifications//settings_page.dart';
+
 
 
 
@@ -27,7 +26,6 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   void initState() {
     super.initState();
     //tableNames = [];  // add predefined libraries?
-    NotificationApi.init(initScheduled: true);
     refreshVocabPackages();
   }
 
@@ -40,7 +38,6 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     setState(() => isLoading = true);
 
     await VocabDatabase.instance.getAllExistingDataTables();
-    await scheduleNotifications();
     if(tableNames.isNotEmpty)
       {
         setState(() => isPackageExisting = true);
@@ -66,7 +63,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
           ),)],),
         ]
       ),
-      actions: [testNotifications(), findAllButton()] //, Icon(Icons.search), SizedBox(width: 12)],
+      actions: [findAllButton()] //, Icon(Icons.search), SizedBox(width: 12)],
     ),
     body: Center(
       child: isLoading
@@ -101,75 +98,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     );
   }
 
-  Widget testNotifications() {
-    return ElevatedButton(
-      onPressed: () async {
-        if(currentStudyPackage != null && tableNames.contains(currentStudyPackage!)) {
-          final int curIdx = currentStudyPackage!.getCurrentId();
-          final String key = (currentStudyPackage!).getKey();
-          WordPair curWordPair = await VocabDatabase.instance.readWordPair(
-               curIdx, (currentStudyPackage!).getKey());
-          // get next idx
-          if (curWordPair.numberSeen >= 2) {
-            List<WordPair> wordPairs = await VocabDatabase.instance
-                .readAllWordPairs(currentStudyPackage!.getKey());
-            if (wordPairs.length == curIdx) {
-              currentStudyPackage!.setCurrentId(1);
-            }
-            else {
-              currentStudyPackage!.setCurrentId(curIdx + 1);
-            }
-          }
 
-          final now = DateTime.now();
-          NotificationApi.showScheduledNotification(
-            title: curWordPair.baseWord,
-            body: curWordPair.translation,
-            payload: curWordPair.numberSeen.toString(),
-            scheduledTime: Time(now.hour, now.minute, now.second + 10),
-          );
-        }
-      },
-      child: Text('Test' + snotificationNr.toString()),
-    );
-  }
-
-  Future scheduleNotifications() async {
-    if (currentStudyPackage != null && snotificationNr > 0 && tableNames.contains(currentStudyPackage!)) {
-      final int curIdx = currentStudyPackage!.getCurrentId();
-      WordPair curWordPair = await VocabDatabase.instance.readWordPair(
-          curIdx, currentStudyPackage!.getKey());
-      // get next idx
-      if (curWordPair.numberSeen >= 2) {
-        List<WordPair> wordPairs = await VocabDatabase.instance
-            .readAllWordPairs(currentStudyPackage!.getKey());
-        if (wordPairs.length == curIdx) {
-          currentStudyPackage!.setCurrentId(1);
-        }
-        else {
-          currentStudyPackage!.setCurrentId(curIdx + 1);
-        }
-      }
-
-      final now = DateTime.now();
-      final double timeDiffMinutes = (sendTime - sstartTime) * 60 /
-          snotificationNr; // 7:00 - 21:00
-      double minute = 0;
-      for (int i = 0; i < snotificationNr; i++) {
-        final int addedHours = (minute / 60).toInt();
-        final int addedMinutes = (minute - addedHours * 60).toInt();
-        NotificationApi.showScheduledNotification(
-          title: curWordPair.baseWord,
-          body: curWordPair.translation,
-          payload: curWordPair.numberSeen.toString(),
-          scheduledTime: Time(Page2.getStartTime() + addedHours, addedMinutes, 0),
-        );
-        minute = minute + timeDiffMinutes;
-        WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
-        VocabDatabase.instance.updateWordPair(updatedWordPair, currentStudyPackage!.getKey());
-      }
-    }
-  }
 
   Widget selectStudyPackage(databaseKey key) {
     return ElevatedButton(

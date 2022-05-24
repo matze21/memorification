@@ -4,13 +4,21 @@ git token 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
 app specific PW vxdp-ttlp-kxwl-wieo
 
 Datatables:
-- automatically adapt font size depending on how much text we add
-- new datapair also by clicking enter in last column
-- new column: numbers shown
-- add button, re-learn
-- add option, num. of notifications for word
+- add number of notifications sent
+- add max number of notifications
+- remove id
+- add a settings button for every word / or long click!
+
+- introduce getNextKey function (get all word pairs, find cur id, find following id, if last one - display something like finished)
+
+- keep settings stored even if app is closed
+- keep sending notifications even if app is closed
+- only update notification schedule if something is changing
+- make sure to schedule multiple notifications, not just the last one 
+
 
 Notifications:
+- debug them
 - random testing of words (array of index)
 
 Databases:
@@ -23,3 +31,10 @@ Down the line:
 - create user profile
 - server to store datasets & users
 - adds
+
+
+- automatically adapt font size depending on how much text we add
+- new datapair also by clicking enter in last column
+- new column: numbers shown
+- add button, re-learn
+- add option, num. of notifications for word
