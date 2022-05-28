@@ -33,11 +33,11 @@ class _MyPage2State extends State<Page2> {
     super.initState();
   }
 
-  void resetSchedule() async {
+  Future resetSchedule() async {
     NotificationApi.cancel();
-    setState(() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
       areScheduled = false;
-      final prefs = await SharedPreferences.getInstance();
       prefs.setBool('areScheduled', areScheduled);
     });
   }
@@ -219,6 +219,7 @@ class _MyPage2State extends State<Page2> {
     return ElevatedButton(
       onPressed: () async {
         final prefs = await SharedPreferences.getInstance();
+        await resetSchedule();
         setState(() {
           areScheduled = false;
           prefs.setBool('areScheduled', areScheduled);
