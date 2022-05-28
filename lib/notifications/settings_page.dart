@@ -67,7 +67,7 @@ class _MyPage2State extends State<Page2> {
         dataBaseKey = prefs.getString('currentStudyPackageString')!;
       });
     }
-    if(prefs.getInt('areScheduled') != null)   {
+    if(prefs.getBool('areScheduled') != null)   {
       setState(() {
         areScheduled = prefs.getBool('areScheduled')!;
         if(dataBaseKey == null && areScheduled) {
