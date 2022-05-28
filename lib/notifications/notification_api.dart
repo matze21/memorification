@@ -66,7 +66,7 @@ class NotificationApi {
     String? title,
     String? body,
     String? payload,
-}) async => _notifications[notID].show(
+}) async => _notifications.elementAt(notID).show(
     id, title, body, await _notificationDetails(), payload: payload,
   );
 
@@ -78,8 +78,8 @@ class NotificationApi {
     String? payload,
     //required DateTime scheduleDate,
     required Time scheduledTime, // e.g. Time(8) = 8 am
-  }) async => _notifications[notID].zonedSchedule(
-    id, title, body,
+  }) async => _notifications.elementAt(notID).zonedSchedule(
+    notID, title, body,
     _scheduleDaily(scheduledTime),  //tz.TZDateTime.from(scheduleDate, tz.local),
     await _notificationDetails(), payload: payload,
     androidAllowWhileIdle: true,
@@ -103,9 +103,9 @@ class NotificationApi {
     final settings = InitializationSettings(android: android, iOS: iOS);
 
     for(int i = 0; i < MAX_NUM_NOTIFICATIONS; i++) {
-      await _notifications[i].initialize(settings,
+      await _notifications.elementAt(i).initialize(settings,
         onSelectNotification: (payload) async {
-          onNotifications[i].add(payload);
+          onNotifications.elementAt(i).add(payload);
         },
       );
     }

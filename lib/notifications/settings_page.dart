@@ -23,6 +23,7 @@ class _MyPage2State extends State<Page2> {
   late int numNot = 1;
   late int startT = 6;
   late int endT = 18;
+  late bool areScheduled = false;
   final List<int> notificationNumbers = List<int>.generate(MAX_NUM_NOTIFICATIONS, (k) => k + 1);
 
   @override
@@ -30,6 +31,15 @@ class _MyPage2State extends State<Page2> {
     NotificationApi.init(initScheduled: true);
     updateStoredValues();
     super.initState();
+  }
+
+  void resetSchedule() async {
+    NotificationApi.init();
+    setState(() async {
+      areScheduled = false;
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setBool('areScheduled', areScheduled);
+    });
   }
 
   Future updateStoredValues() async {
@@ -49,6 +59,15 @@ class _MyPage2State extends State<Page2> {
     if(prefs.getInt('endT') != null)   {
       setState(() {
         endT = prefs.getInt('endT')!;
+      });
+    }
+    if(prefs.getInt('areScheduled') != null)   {
+      setState(() {
+        areScheduled = prefs.getBool('areScheduled')!;
+        if(currentStudyPackage == null && areScheduled) {
+            areScheduled = false;
+            prefs.setBool('areScheduled', areScheduled);
+          }
       });
     }
   }
@@ -167,7 +186,7 @@ class _MyPage2State extends State<Page2> {
           TableRow(
             children: [
               Column(
-                children: [testNotifications()
+                children: [turnOffNotifications()
                 ],
               ),
               Column()
@@ -177,7 +196,13 @@ class _MyPage2State extends State<Page2> {
               children: [
                 Column(
                   children: [ElevatedButton(
-                      onPressed: () async { scheduleNotifications(); },
+                    style: ElevatedButton.styleFrom(
+                      primary: areScheduled ? Colors.green : Colors.red, // background
+                      onPrimary: Colors.white, // foreground
+                    ),
+                      onPressed: () async {
+                        await scheduleNotifications();
+                        },
                       child: Text("schedule notifications"),
                   )
                   ],
@@ -190,25 +215,16 @@ class _MyPage2State extends State<Page2> {
     );
   }
 
-  Widget testNotifications() {
+  Widget turnOffNotifications() {
     return ElevatedButton(
       onPressed: () async {
-        if(currentStudyPackage != null && tableNames.contains(currentStudyPackage!)) {
-          final int curIdx = currentStudyPackage!.getCurrentId();
-          final String key = (currentStudyPackage!).getKey();
-          WordPair curWordPair = await VocabDatabase.instance.readWordPair(
-              curIdx, (currentStudyPackage!).getKey());
-
-          final now = DateTime.now();
-          NotificationApi.showScheduledNotification(
-            title: curWordPair.baseWord,
-            body: curWordPair.translation,
-            payload: curWordPair.numberSeen.toString(),
-            scheduledTime: Time(now.hour, now.minute, now.second + 10),
-          );
-        }
+        final prefs = await SharedPreferences.getInstance();
+        setState(() {
+          areScheduled = false;
+          prefs.setBool('areScheduled', areScheduled);
+        });
       },
-      child: Text('Test' + numNot.toString()),
+      child: Text('Stop Notificaitons'),
     );
   }
 
@@ -232,6 +248,13 @@ class _MyPage2State extends State<Page2> {
       final now = DateTime.now();
       final double timeDiffMinutes = (endT - startT) * 60 /numNot; // 7:00 - 21:00
       double minute = 0;
+      NotificationApi.init();
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        areScheduled = true;
+        prefs.setBool('areScheduled', areScheduled);
+      });
+
       for (int i = 0; i < numNot; i++) {
         final int addedHours = (minute / 60).toInt();
         final int addedMinutes = (minute - addedHours * 60).toInt();
@@ -246,7 +269,7 @@ class _MyPage2State extends State<Page2> {
           payload: curWordPair.numberSeen.toString(),
           scheduledTime: Time(startT + addedHours, addedMinutes, 0),
         );
-        print('scheduled notification at ' + Time(startT + addedHours, addedMinutes, 0).toString());
+        print('scheduled notification at ' + Time(startT + addedHours, addedMinutes, 0).toString() + i.toString());
         minute = minute + timeDiffMinutes;
         WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
         VocabDatabase.instance.updateWordPair(updatedWordPair, currentStudyPackage!.getKey());
