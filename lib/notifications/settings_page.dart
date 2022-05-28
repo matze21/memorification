@@ -24,6 +24,7 @@ class _MyPage2State extends State<Page2> {
   late int startT = 6;
   late int endT = 18;
   late bool areScheduled = false;
+  late String? dataBaseKey = null;
   final List<int> notificationNumbers = List<int>.generate(MAX_NUM_NOTIFICATIONS, (k) => k + 1);
 
   @override
@@ -61,10 +62,15 @@ class _MyPage2State extends State<Page2> {
         endT = prefs.getInt('endT')!;
       });
     }
+    if(prefs.getString('currentStudyPackageString') != null) {
+      setState(() {
+        dataBaseKey = prefs.getString('currentStudyPackageString')!;
+      });
+    }
     if(prefs.getInt('areScheduled') != null)   {
       setState(() {
         areScheduled = prefs.getBool('areScheduled')!;
-        if(currentStudyPackage == null && areScheduled) {
+        if(dataBaseKey == null && areScheduled) {
             areScheduled = false;
             prefs.setBool('areScheduled', areScheduled);
           }
@@ -230,10 +236,10 @@ class _MyPage2State extends State<Page2> {
   }
 
   Future scheduleNotifications() async {
-    if (currentStudyPackage != null && numNot > 0) {  //&& tableNames.contains(currentStudyPackage!)
-      final int curIdx = currentStudyPackage!.getCurrentId();
+    if (dataBaseKey != null && numNot > 0) {  //&& tableNames.contains(currentStudyPackage!)
+      final int curIdx = 1; // TODO: find better way of choosing next word pair
       WordPair curWordPair = await VocabDatabase.instance.readWordPair(
-          curIdx, currentStudyPackage!.getKey());
+          curIdx, dataBaseKey!);
 
       NotificationApi.init();
       final prefs = await SharedPreferences.getInstance();
@@ -261,7 +267,7 @@ class _MyPage2State extends State<Page2> {
         print('scheduled notification at ' + minute.toString() +' ' + addedMinutes.toString() + i.toString());
         minute = minute + timeDiffMinutes;
         WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
-        VocabDatabase.instance.updateWordPair(updatedWordPair, currentStudyPackage!.getKey());
+        VocabDatabase.instance.updateWordPair(updatedWordPair, dataBaseKey!);
       }
     }
   }

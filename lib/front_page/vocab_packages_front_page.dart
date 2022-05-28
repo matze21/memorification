@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '/database/vocab_database.dart';
 import '/database/model.dart';
 import '/vocab_page//add_edit_vocab_package.dart';
 import '/vocab_page/add_vocab_package_page.dart';
-
-
 
 
 class vocabPackagesPage extends StatefulWidget {
@@ -21,6 +19,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   bool isLoading = false;
   bool isPackageExisting = false;
   int notificationNr = 0;
+  databaseKey? currentStudyPackage = null;
 
   @override
   void initState() {
@@ -38,10 +37,16 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     setState(() => isLoading = true);
 
     await VocabDatabase.instance.getAllExistingDataTables();
-    if(tableNames.isNotEmpty)
-      {
+    if(tableNames.isNotEmpty) {
         setState(() => isPackageExisting = true);
-      }
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    currentStudyPackage = null;
+    if(prefs.getString('currentStudyPackageString') != null) {
+      final String curString = prefs.getString('currentStudyPackageString')!;
+      currentStudyPackage = databaseKey.getDataBaseKeyFromKey(curString);
+    }
 
     setState(() => isLoading = false);
   }
@@ -58,7 +63,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
           children: [Container(width: 200, child: Text(
               (currentStudyPackage == null)
                   ? 'No package selected for studying'
-                  : 'Studying: ' + currentStudyPackage!.getKey()
+                  : 'Studying: ' + currentStudyPackage!.base +' ' + currentStudyPackage!.second
               , style: TextStyle(color: Colors.white, fontSize: 18)
           ),)],),
         ]
@@ -103,7 +108,8 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   Widget selectStudyPackage(databaseKey key) {
     return ElevatedButton(
       onPressed: () async {
-        currentStudyPackage = key;
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString('currentStudyPackageString', key.getKey());
         refreshVocabPackages();
       },
       child: Text('study package'),
@@ -162,8 +168,10 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
               onPressed: () async {
                 tableNames.remove(vocabPackage); //only removes from visu
                 await VocabDatabase.instance.deleteDB(vocabPackage.getKey());
-                if((currentStudyPackage != null) && (vocabPackage.getCurrentId() == currentStudyPackage!.getCurrentId())) { //reset the pointer to the study package if we delete the current one
+                final prefs = await SharedPreferences.getInstance();
+                if((currentStudyPackage != null) && (vocabPackage.getKey() == currentStudyPackage!.getKey())) { //reset the pointer to the study package if we delete the current one
                     currentStudyPackage = null;
+                    prefs.remove('currentStudyPackageString');
                 }
                 await refreshVocabPackages();
               },

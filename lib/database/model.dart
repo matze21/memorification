@@ -1,23 +1,19 @@
 List<databaseKey> tableNames = [];  // for now only work with one language
-databaseKey? currentStudyPackage = null;
 
 class databaseKeyFields {
-  static final List<String> values = [base, second, idx];
+  static final List<String> values = [base, second];
 
   static final String base = 'base';
   static final String second = 'second';
-  static final String idx = 'curIndex';
 }
 
 class databaseKey {
   final String base;
   final String second;
-  int curIndex;
 
   databaseKey({
       required this.base,
-      required this.second,
-      required this.curIndex});
+      required this.second});
 
   static databaseKey getDataBaseKeyFromKey(String key){
     int separateIdx = -1;
@@ -28,11 +24,8 @@ class databaseKey {
       }
     String base = key.substring(0, separateIdx);
     String second = key.substring(separateIdx+1, key.length);
-    return databaseKey(base: base, second: second, curIndex: 1);
+    return databaseKey(base: base, second: second);
   }
-
-  int getCurrentId() { return curIndex;}
-  void setCurrentId(int id) { curIndex = id;}
 
   String getKey(){
     return base + '_' + second;
@@ -40,9 +33,7 @@ class databaseKey {
 
   static databaseKey fromJson(Map<String, Object?> json) => databaseKey(
     base: json[databaseKeyFields.base] as String,
-    second: json[databaseKeyFields.second] as String,
-    curIndex: json[databaseKeyFields.idx] as int,
-  );
+    second: json[databaseKeyFields.second] as String);
 }
 
 class WordPairFields {

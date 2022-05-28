@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import '/database/model.dart';
 import '/database/vocab_database.dart';
 import 'add_word_pair.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddEditPackagePage extends StatefulWidget {
   const AddEditPackagePage(this.tableName);
@@ -159,8 +160,11 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         primary: Colors.grey.shade700,
       ),
       onPressed: () async {
-          if(currentStudyPackage != null && currentStudyPackage!.getCurrentId() == id) {
-            currentStudyPackage = null;  // reset current study package
+        final prefs            = await SharedPreferences.getInstance();
+        final String curString = prefs.getString('currentStudyPackageString')!;
+          if(curString != null) // && curString == id)
+          {
+            prefs.remove('currentStudyPackageString');
           }
           await VocabDatabase.instance.deleteWordPair(id, widget.tableName.getKey());
           await getWordPairs();

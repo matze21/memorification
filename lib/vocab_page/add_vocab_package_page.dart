@@ -69,7 +69,7 @@ class _AddVocabPackagePageState extends State<AddVocabPackagePage> {
 
 databaseKey addDatabaseTable(String firstLanguage, String secondLanguage)
 {
-  databaseKey key = databaseKey(base: firstLanguage, second: secondLanguage, curIndex: 1);
+  databaseKey key = databaseKey(base: firstLanguage, second: secondLanguage);
   tableNames.add(key);
   VocabDatabase.createDB(key.getKey());
 
