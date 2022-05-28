@@ -245,16 +245,16 @@ class _MyPage2State extends State<Page2> {
       //   }
       // }
 
-      final now = DateTime.now();
-      final double timeDiffMinutes = (endT - startT) * 60 /numNot; // 7:00 - 21:00
-      double minute = 0;
+
       NotificationApi.init();
       final prefs = await SharedPreferences.getInstance();
       setState(() {
         areScheduled = true;
         prefs.setBool('areScheduled', areScheduled);
       });
-
+      final now = DateTime.now();
+      final double timeDiffMinutes = (endT - startT) * 60 /numNot; // 7:00 - 21:00
+      double minute = 0;
       for (int i = 0; i < numNot; i++) {
         final int addedHours = (minute / 60).toInt();
         final int addedMinutes = (minute - addedHours * 60).toInt();
@@ -269,7 +269,7 @@ class _MyPage2State extends State<Page2> {
           payload: curWordPair.numberSeen.toString(),
           scheduledTime: Time(startT + addedHours, addedMinutes, 0),
         );
-        print('scheduled notification at ' + Time(startT + addedHours, addedMinutes, 0).toString() + i.toString());
+        print('scheduled notification at ' + minute.toString() +' ' + addedMinutes.toString() + i.toString());
         minute = minute + timeDiffMinutes;
         WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
         VocabDatabase.instance.updateWordPair(updatedWordPair, currentStudyPackage!.getKey());
