@@ -117,4 +117,10 @@ class NotificationApi {
       tz.setLocalLocation(tz.getLocation(locationName));
     }
   }
+
+  static Future cancel() async {
+    for(int i = 0; i < MAX_NUM_NOTIFICATIONS; i++) {
+      await _notifications.elementAt(i).cancel(i);
+    }
+  }
 }

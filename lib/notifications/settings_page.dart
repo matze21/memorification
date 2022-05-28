@@ -34,7 +34,7 @@ class _MyPage2State extends State<Page2> {
   }
 
   void resetSchedule() async {
-    NotificationApi.init();
+    NotificationApi.cancel();
     setState(() async {
       areScheduled = false;
       final prefs = await SharedPreferences.getInstance();
@@ -233,18 +233,6 @@ class _MyPage2State extends State<Page2> {
       final int curIdx = currentStudyPackage!.getCurrentId();
       WordPair curWordPair = await VocabDatabase.instance.readWordPair(
           curIdx, currentStudyPackage!.getKey());
-      // get next idx
-      // if (curWordPair.numberSeen >= 2) {
-      //   List<WordPair> wordPairs = await VocabDatabase.instance
-      //       .readAllWordPairs(currentStudyPackage!.getKey());
-      //   if (wordPairs.length == curIdx) {
-      //     currentStudyPackage!.setCurrentId(1);
-      //   }
-      //   else {
-      //     currentStudyPackage!.setCurrentId(curIdx + 1);
-      //   }
-      // }
-
 
       NotificationApi.init();
       final prefs = await SharedPreferences.getInstance();
