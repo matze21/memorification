@@ -46,7 +46,7 @@ const int MAX_NUM_NOTIFICATIONS = 60;
 
 class NotificationApi {
   static final _notifications  = List<FlutterLocalNotificationsPlugin>.filled(MAX_NUM_NOTIFICATIONS, FlutterLocalNotificationsPlugin());
-  static final onNotifications = List<BehaviorSubject>.filled(MAX_NUM_NOTIFICATIONS, BehaviorSubject<String?>());
+  static final onNotifications = BehaviorSubject<String?>();
 
   static Future _notificationDetails() async {
     return NotificationDetails(
@@ -105,7 +105,7 @@ class NotificationApi {
     for(int i = 0; i < MAX_NUM_NOTIFICATIONS; i++) {
       await _notifications.elementAt(i).initialize(settings,
         onSelectNotification: (payload) async {
-          onNotifications.elementAt(i).add(payload);
+          onNotifications.add(payload);
         },
       );
     }

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:sql_demo/front_page/home_page.dart';
 
 import '/front_page/vocab_packages_front_page.dart';
 import '/notifications/notification_api.dart';
@@ -17,7 +18,7 @@ class Page2 extends StatefulWidget {
   _MyPage2State createState() => _MyPage2State();
 }
 
-class _MyPage2State extends State<Page2> {
+class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
   // Initial Selected Value
   List<int> hours = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
   late int numNot = 1;
@@ -26,13 +27,62 @@ class _MyPage2State extends State<Page2> {
   late bool areScheduled = false;
   late String? dataBaseKey = null;
   final List<int> notificationNumbers = List<int>.generate(MAX_NUM_NOTIFICATIONS, (k) => k + 1);
+  AppLifecycleState? _notification;
 
   @override
   void initState() {
     NotificationApi.init(initScheduled: true);
     updateStoredValues();
     super.initState();
+    listenNotifications();
+    WidgetsBinding.instance?.addObserver(this);
   }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    setState(() {
+      areScheduled = false;
+    });
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      _notification = state;
+    });
+  }
+
+  void listenNotifications() {
+    NotificationApi.onNotifications.stream.listen(onClickedNotification);
+  }
+
+
+  // decide what to do when notification is clicked!!
+  void onClickedNotification(String? payload) {
+    bool renderHomePage = false;
+    switch (_notification) {
+      case AppLifecycleState.resumed:
+        renderHomePage = false;
+        break;
+      case AppLifecycleState.inactive:
+        renderHomePage = false;
+        break;
+      case AppLifecycleState.paused:
+        renderHomePage = true;
+        break;
+      case AppLifecycleState.detached:
+        renderHomePage = true;
+        break;
+    }
+    if(renderHomePage) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => HomePage(),
+      ));
+    }
+  }
+
 
   Future resetSchedule() async {
     NotificationApi.cancel();
@@ -236,7 +286,9 @@ class _MyPage2State extends State<Page2> {
   }
 
   Future scheduleNotifications() async {
-    if (dataBaseKey != null && numNot > 0) {  //&& tableNames.contains(currentStudyPackage!)
+    final bool isTimeValid = endT > startT;
+    final bool isNumNotValid = numNot > 0;
+    if (dataBaseKey != null && isNumNotValid && isTimeValid) {  //&& tableNames.contains(currentStudyPackage!)
       final int curIdx = 1; // TODO: find better way of choosing next word pair
       WordPair curWordPair = await VocabDatabase.instance.readWordPair(
           curIdx, dataBaseKey!);
@@ -248,7 +300,7 @@ class _MyPage2State extends State<Page2> {
         prefs.setBool('areScheduled', areScheduled);
       });
       final now = DateTime.now();
-      final double timeDiffMinutes = (endT - startT) * 60 /numNot; // 7:00 - 21:00
+      final double timeDiffMinutes = (endT - startT) * 60 /numNot;
       double minute = 0;
       for (int i = 0; i < numNot; i++) {
         final int addedHours = (minute / 60).toInt();
