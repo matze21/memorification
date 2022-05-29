@@ -6,46 +6,10 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 
-// helpful widget: SnackBar(content: Text('')) -> shows bottom notification
-
-
-/*class MainPage extends StatefulWidget {
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-class _MainPageState extends State<MainPage> {
-  @override
-  void initState() {
-    super.initState();
-    NotificationApi.init(true); // init scheduled notifications
-    listenNotifications();
-  }
-
-  void listenNotifications() =>
-      NotificationApi.onNotifications.stream.listen(onClickedNotification);
-
-  // decide what to do when notification is clicked!!
-  void onClickedNotification(String? payload) =>
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => SecondPage(payload: payload),
-      ));
-
-   // add scheduled notification
-   NotificationApi.showScheduledNotification(
-      title: '',
-      body: '',
-      payload: '',
-      scheduledDate: DateTime.now().add(Duration(seconds:12)),  //can switch it up to any time
-      );
-
-  @override
-  Widget build(BuildContext context) => Scaffold();
-}*/
-
 const int MAX_NUM_NOTIFICATIONS = 60;
 
 class NotificationApi {
-  static final _notifications  = List<FlutterLocalNotificationsPlugin>.filled(MAX_NUM_NOTIFICATIONS, FlutterLocalNotificationsPlugin());
+  static final _notifications  = FlutterLocalNotificationsPlugin();
   static final onNotifications = BehaviorSubject<String?>();
 
   static Future _notificationDetails() async {
@@ -66,8 +30,8 @@ class NotificationApi {
     String? title,
     String? body,
     String? payload,
-}) async => _notifications.elementAt(notID).show(
-    id, title, body, await _notificationDetails(), payload: payload,
+}) async => _notifications.show(
+    notID, title, body, await _notificationDetails(), payload: payload,
   );
 
   static Future showScheduledNotification({
@@ -78,7 +42,7 @@ class NotificationApi {
     String? payload,
     //required DateTime scheduleDate,
     required Time scheduledTime, // e.g. Time(8) = 8 am
-  }) async => _notifications.elementAt(notID).zonedSchedule(
+  }) async => _notifications.zonedSchedule(
     notID, title, body,
     _scheduleDaily(scheduledTime),  //tz.TZDateTime.from(scheduleDate, tz.local),
     await _notificationDetails(), payload: payload,
@@ -101,15 +65,11 @@ class NotificationApi {
     final android = AndroidInitializationSettings('@mipmap/ic_launcher');
     final iOS = IOSInitializationSettings();
     final settings = InitializationSettings(android: android, iOS: iOS);
-
-    for(int i = 0; i < MAX_NUM_NOTIFICATIONS; i++) {
-      await _notifications.elementAt(i).initialize(settings,
+      await _notifications.initialize(settings,
         onSelectNotification: (payload) async {
           onNotifications.add(payload);
         },
       );
-    }
-
 
     if(initScheduled) {
       tz.initializeTimeZones();
@@ -120,7 +80,7 @@ class NotificationApi {
 
   static Future cancel() async {
     for(int i = 0; i < MAX_NUM_NOTIFICATIONS; i++) {
-      await _notifications.elementAt(i).cancel(i);
+      await _notifications.cancel(i);
     }
   }
 }
