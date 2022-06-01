@@ -35,7 +35,8 @@ CREATE TABLE $tableName (
   ${WordPairFields.id} $idType, 
   ${WordPairFields.numberSeen} $integerType,
   ${WordPairFields.baseWord} $textType,
-  ${WordPairFields.translation} $textType
+  ${WordPairFields.translation} $textType,
+  ${WordPairFields.maxNumber} $integerType
   )
 ''');
   }

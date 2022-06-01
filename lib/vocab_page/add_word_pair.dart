@@ -52,7 +52,7 @@ class _AddWordPairState extends State<AddWordPairPage> {
       ElevatedButton(
           child: Text('Done'),
           onPressed: () {
-            WordPair newWordPair = WordPair(baseWord: controllerBase.text, translation: controllerTransl.text, numberSeen: 0);
+            WordPair newWordPair = WordPair(baseWord: controllerBase.text, translation: controllerTransl.text, numberSeen: 0, maxNumber: 10); //DEFAULT_MAX_NR_NOTIF);
             VocabDatabase.instance.addWordPair(newWordPair, widget.tableName.getKey());
 
             Navigator.of(context).pop();

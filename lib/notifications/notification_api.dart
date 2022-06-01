@@ -40,11 +40,11 @@ class NotificationApi {
     String? title,
     String? body,
     String? payload,
-    //required DateTime scheduleDate,
-    required Time scheduledTime, // e.g. Time(8) = 8 am
+    required DateTime scheduledTime,
+    //required Time scheduledTime, // e.g. Time(8) = 8 am
   }) async => _notifications.zonedSchedule(
     notID, title, body,
-    _scheduleDaily(scheduledTime),  //tz.TZDateTime.from(scheduleDate, tz.local),
+    tz.TZDateTime.from(scheduledTime, tz.local), //_scheduleDaily(scheduledTime),  //
     await _notificationDetails(), payload: payload,
     androidAllowWhileIdle: true,
     uiLocalNotificationDateInterpretation:

@@ -28,6 +28,11 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
   late String? dataBaseKey = null;
   final List<int> notificationNumbers = List<int>.generate(MAX_NUM_NOTIFICATIONS, (k) => k + 1);
   AppLifecycleState? _notification;
+  late int? lastNot_year  = null;
+  late int? lastNot_month = null;
+  late int? lastNot_day   = null;
+  late int? lastNot_hour  = null;
+  late int? lastNot_min   = null;
 
   @override
   void initState() {
@@ -105,7 +110,6 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
       setState(() {
         startT = prefs.getInt('startT')!;
       });
-
     }
     if(prefs.getInt('endT') != null)   {
       setState(() {
@@ -125,6 +129,31 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
             prefs.setBool('areScheduled', areScheduled);
           }
       });
+    }
+    if(areScheduled) {
+      if(prefs.getInt('lastNot_year') != null)  { lastNot_year = prefs.getInt('lastNot_year')!; }
+      if(prefs.getInt('lastNot_month') != null) { lastNot_month = prefs.getInt('lastNot_month')!; }
+      if(prefs.getInt('lastNot_day') != null)   { lastNot_day = prefs.getInt('lastNot_day')!; }
+      if(prefs.getInt('lastNot_hour') != null)  { lastNot_hour = prefs.getInt('lastNot_hour')!; }
+      if(prefs.getInt('lastNot_min') != null)   { lastNot_min = prefs.getInt('lastNot_min')!; }
+
+      if((lastNot_year != null) && (lastNot_month != null) && (lastNot_day != null) && (lastNot_hour != null) && (lastNot_min != null)) {
+        final now = DateTime.now();
+        final lastNot = DateTime(lastNot_year!, lastNot_month!, lastNot_day!, lastNot_hour!, lastNot_min!, 0);
+        if (now.isAfter(lastNot)) {
+          setState(() {
+            areScheduled = false;
+            prefs.setBool('areScheduled', areScheduled);
+          });
+        }
+      }
+    }
+    if(areScheduled == false) {
+      prefs.remove('lastNot_year');
+      prefs.remove('lastNot_month');
+      prefs.remove('lastNot_day');
+      prefs.remove('lastNot_hour');
+      prefs.remove('lastNot_min');
     }
   }
 
@@ -279,6 +308,11 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
         setState(() {
           areScheduled = false;
           prefs.setBool('areScheduled', areScheduled);
+          prefs.remove('lastNot_year');
+          prefs.remove('lastNot_month');
+          prefs.remove('lastNot_day');
+          prefs.remove('lastNot_hour');
+          prefs.remove('lastNot_min');
         });
       },
       child: Text('Stop Notificaitons'),
@@ -289,9 +323,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
     final bool isTimeValid = endT > startT;
     final bool isNumNotValid = numNot > 0;
     if (dataBaseKey != null && isNumNotValid && isTimeValid) {  //&& tableNames.contains(currentStudyPackage!)
-      final int curIdx = 1; // TODO: find better way of choosing next word pair
-      WordPair curWordPair = await VocabDatabase.instance.readWordPair(
-          curIdx, dataBaseKey!);
+      List<WordPair> wordPairs = await VocabDatabase.instance.readAllWordPairs(dataBaseKey!);
 
       NotificationApi.init();
       final prefs = await SharedPreferences.getInstance();
@@ -301,26 +333,55 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
       });
       final now = DateTime.now();
       final double timeDiffMinutes = (endT - startT) * 60 /numNot;
-      double minute = 0;
-      for (int i = 0; i < numNot; i++) {
-        final int addedHours = (minute / 60).toInt();
-        final int addedMinutes = (minute - addedHours * 60).toInt();
+      final int initialNotNr = ((endT - now.hour) * 60 / timeDiffMinutes).toInt();
+      double minute = now.minute.toDouble();
 
-        // get next word pair if more than cur idx
-        // if notification - increment key once it's displayed, once you hit the number use next one
+      int globalNrNot = 0;
+      DateTime endTime = now;
+      int addedDay =0;
+      for(WordPair curWordPair in wordPairs){
+        if(curWordPair.numberSeen < curWordPair.maxNumber) {
+          for (int i = 0; i < curWordPair.maxNumber; i++) {
 
-        NotificationApi.showScheduledNotification(
-          notID: i,
-          title: curWordPair.baseWord,
-          body: curWordPair.translation,
-          payload: curWordPair.numberSeen.toString(),
-          scheduledTime: Time(startT + addedHours, addedMinutes, 0),
-        );
-        print('scheduled notification at ' + minute.toString() +' ' + addedMinutes.toString() + i.toString());
-        minute = minute + timeDiffMinutes;
-        WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
-        VocabDatabase.instance.updateWordPair(updatedWordPair, dataBaseKey!);
+            //final int addedDay     = (globalNrNot / numNot).toInt();
+            int addedHours   = (minute / 60).toInt();
+
+            int hour = startT;
+            if(globalNrNot < initialNotNr) { hour = now.hour; }
+            if((addedHours + hour) > endT) {
+              addedDay = addedDay + 1;
+              minute = 0.0;
+              addedHours = 0;
+            }
+
+            final int addedMinutes = (minute - addedHours * 60).toInt();
+
+
+            DateTime scheduledTime = DateTime(now.year, now.month, now.day + addedDay, hour + addedHours, addedMinutes, 0);
+            endTime = scheduledTime;
+            NotificationApi.showScheduledNotification(
+              notID: globalNrNot,
+              title: curWordPair.baseWord,
+              body: curWordPair.translation,
+              payload: curWordPair.numberSeen.toString(),
+              scheduledTime: scheduledTime,
+            );
+
+            print(scheduledTime);
+
+            minute = minute + timeDiffMinutes;
+            WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
+            VocabDatabase.instance.updateWordPair(updatedWordPair, dataBaseKey!);
+            globalNrNot += 1;
+          }
+        }
       }
+
+      prefs.setInt('lastNot_year',  endTime.year);
+      prefs.setInt('lastNot_month', endTime.month);
+      prefs.setInt('lastNot_day',   endTime.day);
+      prefs.setInt('lastNot_hour',  endTime.hour);
+      prefs.setInt('lastNot_min',   endTime.minute);
     }
   }
 }

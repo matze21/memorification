@@ -36,21 +36,25 @@ class databaseKey {
     second: json[databaseKeyFields.second] as String);
 }
 
+final int DEFAULT_MAX_NR_NOTIF = 10;
+
 class WordPairFields {
   static final List<String> values = [
     /// Add all fields
-    id, numberSeen, baseWord, translation
+    id, numberSeen, baseWord, translation, maxNumber
   ];
 
   static final String id = '_id';
   static final String numberSeen = 'numberSeen';
   static final String baseWord = 'baseWord';
   static final String translation = 'translation';
+  static final String maxNumber = 'maxNumber';
 }
 
 class WordPair {
   final int? id;
   final int numberSeen;
+  int maxNumber = DEFAULT_MAX_NR_NOTIF;
   String baseWord;
   String translation;
 
@@ -59,6 +63,7 @@ class WordPair {
     required this.numberSeen,
     required this.baseWord,
     required this.translation,
+    required this.maxNumber,
   });
 
   void updateBase(String newBase) {this.baseWord = newBase;}
@@ -69,12 +74,14 @@ class WordPair {
     int? numberSeen,
     String? baseWord,
     String? translation,
+    int? maxNumber
   }) =>
       WordPair(
         id: id ?? this.id,
         numberSeen: numberSeen ?? this.numberSeen,
         baseWord: baseWord ?? this.baseWord,
         translation: translation ?? this.translation,
+        maxNumber: maxNumber ?? this.maxNumber,
       );
 
   static WordPair fromJson(Map<String, Object?> json) => WordPair(
@@ -82,6 +89,7 @@ class WordPair {
     numberSeen: json[WordPairFields.numberSeen] as int,
     baseWord: json[WordPairFields.baseWord] as String,
     translation: json[WordPairFields.translation] as String,
+    maxNumber: json[WordPairFields.maxNumber] as int,
   );
 
   Map<String, Object?> toJson() => {
@@ -89,5 +97,6 @@ class WordPair {
     WordPairFields.baseWord: baseWord,
     WordPairFields.numberSeen: numberSeen,
     WordPairFields.translation: translation,
+    WordPairFields.maxNumber: maxNumber,
   };
 }
