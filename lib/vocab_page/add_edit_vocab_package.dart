@@ -161,9 +161,9 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
       ),
       onPressed: () async {
         final prefs            = await SharedPreferences.getInstance();
-        final String curString = prefs.getString('currentStudyPackageString')!;
+        final String? curString = prefs.getString('currentStudyPackageString');
           if(curString != null) // && curString == id)
-          {
+            {
             prefs.remove('currentStudyPackageString');
           }
           await VocabDatabase.instance.deleteWordPair(id, widget.tableName.getKey());
