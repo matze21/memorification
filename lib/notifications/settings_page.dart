@@ -332,7 +332,8 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
         prefs.setBool('areScheduled', areScheduled);
       });
       final now = DateTime.now();
-      final double timeDiffMinutes = (endT - startT) * 60 /numNot;
+      final int numNot_1 = (numNot ==1) ? 1 : numNot-1;
+      final double timeDiffMinutes = (endT - startT) * 60 /(numNot_1);
       final int initialNotNr = ((endT - now.hour) * 60 / timeDiffMinutes).toInt();
       double minute = now.minute.toDouble();
 
@@ -346,7 +347,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
             int addedHours   = (minute / 60).toInt();
 
             int hour = startT;
-            if(globalNrNot < initialNotNr) { hour = now.hour; }
+            if((globalNrNot < initialNotNr) && (now.hour>startT)) { hour = now.hour; }
             if(((addedHours + hour) > endT) ||(((addedHours + hour) == endT) && (numNot == 1))) {
               addedDay = addedDay + 1;
               minute = 0.0;

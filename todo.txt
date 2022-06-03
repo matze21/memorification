@@ -3,14 +3,21 @@ Memorification ToDO:
 git token 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
 app specific PW vxdp-ttlp-kxwl-wieo
 
-Datatables:
-- add number of notifications sent
+epics
+1. better menu for databank
 - add max number of notifications
 - remove id
-- add a in progress icon of which word we currently learning
 - add a settings button for every word / or long click!
-- introduce getNextKey function (get all word pairs, find cur id, find following id, if last one - display something like finished)
 - only update notification schedule if something is changing
+- study dataset again button
+2. beautification
+- make front page & training button nice
+- displays error messages (didn't set database when scheduling / "currently training for .." / finished dataset / no vocab)
+3. have default databanks (search through by button, not editable?)
+4. adds
+
+- add a in progress icon of which word we currently learning (low prio)
+
 
 PROBLEM
 - find solution of how to change notification once it hits the max number
