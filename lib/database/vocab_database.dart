@@ -116,7 +116,7 @@ CREATE TABLE $tableName (
   Future<int> updateWordPair(WordPair note, String tableName) async {
     final db = await instance.database;
 
-    return db.update(
+    return await db.update(
       tableName,
       note.toJson(),
       where: '${WordPairFields.id} = ?',

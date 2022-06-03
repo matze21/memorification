@@ -53,7 +53,7 @@ class WordPairFields {
 
 class WordPair {
   final int? id;
-  final int numberSeen;
+  int numberSeen;
   int maxNumber = DEFAULT_MAX_NR_NOTIF;
   String baseWord;
   String translation;
@@ -68,6 +68,7 @@ class WordPair {
 
   void updateBase(String newBase) {this.baseWord = newBase;}
   void updateTranslation(String newTrans) {this.translation = newTrans;}
+  void iterateNumSeen() {this.numberSeen += 1;}
 
   WordPair copy({
     int? id,

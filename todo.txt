@@ -7,14 +7,18 @@ Datatables:
 - add number of notifications sent
 - add max number of notifications
 - remove id
+- add a in progress icon of which word we currently learning
 - add a settings button for every word / or long click!
-
 - introduce getNextKey function (get all word pairs, find cur id, find following id, if last one - display something like finished)
-
-- keep settings stored even if app is closed
-- keep sending notifications even if app is closed
 - only update notification schedule if something is changing
-- make sure to schedule multiple notifications, not just the last one 
+
+PROBLEM
+- find solution of how to change notification once it hits the max number
+- increment notification nr key once notification gets triggered
+- How to schedule changing notification content
+	- schedule new notifications once old word is done
+	- schedule new notification every time one is triggered
+	- schedule notification every day
 
 
 Notifications:

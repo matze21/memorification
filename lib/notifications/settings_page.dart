@@ -340,15 +340,14 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
       DateTime endTime = now;
       int addedDay =0;
       for(WordPair curWordPair in wordPairs){
+        print('numSeen ' + curWordPair.numberSeen.toString());
         if(curWordPair.numberSeen < curWordPair.maxNumber) {
           for (int i = 0; i < curWordPair.maxNumber; i++) {
-
-            //final int addedDay     = (globalNrNot / numNot).toInt();
             int addedHours   = (minute / 60).toInt();
 
             int hour = startT;
             if(globalNrNot < initialNotNr) { hour = now.hour; }
-            if((addedHours + hour) > endT) {
+            if(((addedHours + hour) > endT) ||(((addedHours + hour) == endT) && (numNot == 1))) {
               addedDay = addedDay + 1;
               minute = 0.0;
               addedHours = 0;
@@ -367,13 +366,17 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
               scheduledTime: scheduledTime,
             );
 
-            print(scheduledTime);
+            print(globalNrNot.toString() + ' ' + scheduledTime.toString());
 
             minute = minute + timeDiffMinutes;
-            WordPair updatedWordPair = curWordPair.copy(numberSeen: curWordPair.numberSeen + 1);
-            VocabDatabase.instance.updateWordPair(updatedWordPair, dataBaseKey!);
+            curWordPair.iterateNumSeen();
+
             globalNrNot += 1;
           }
+          await VocabDatabase.instance.updateWordPair(curWordPair, dataBaseKey!);
+
+          WordPair updatedWP = await VocabDatabase.instance.readWordPair(curWordPair.id!, dataBaseKey!);
+          print('updatedWP ' + updatedWP.numberSeen.toString());
         }
       }
 
