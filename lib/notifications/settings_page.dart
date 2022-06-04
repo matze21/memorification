@@ -292,7 +292,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
                       onPrimary: Colors.white, // foreground
                     ),
                       onPressed: () async {
-                        final bool didUpdate = await staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey);
+                        final bool didUpdate = await staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey, context);
                         setState(() {
                           areScheduled = didUpdate;
                         });
@@ -330,10 +330,40 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
 }
 
 class staticFunction {
-  static Future<bool> scheduleNotifications(int endT, int startT, int numNot, String? dataBaseKey) async {
+  static Future<bool> scheduleNotifications(int endT, int startT, int numNot, String? dataBaseKey, BuildContext context) async {
     final bool isTimeValid = endT > startT;
     final bool isNumNotValid = numNot > 0;
     bool didUpdate = false;
+    if(dataBaseKey == null){
+      AlertDialog alert = AlertDialog(
+        backgroundColor: Colors.transparent,
+        content: Align(child: Text("Error: choose package first", style: TextStyle(color: Colors.white),), alignment: Alignment.center),
+      );
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          Future.delayed(Duration(seconds: 4), () {
+            Navigator.of(context).pop(true);
+          });
+          return alert;
+        },
+      );
+    }
+    if(isTimeValid == false){
+      AlertDialog alert = AlertDialog(
+        backgroundColor: Colors.transparent,
+        content: Align(child: Text("Error: end time is before start time", style: TextStyle(color: Colors.white),), alignment: Alignment.center),
+      );
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          Future.delayed(Duration(seconds: 4), () {
+            Navigator.of(context).pop(true);
+          });
+          return alert;
+        },
+      );
+    }
     if (dataBaseKey != null && isNumNotValid && isTimeValid) {  //&& tableNames.contains(currentStudyPackage!)
       List<WordPair> wordPairs = await VocabDatabase.instance.readAllWordPairs(dataBaseKey);
 
