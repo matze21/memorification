@@ -55,11 +55,6 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         child: ListView.builder(
           itemCount: this.tableRowList.length, // Don't forget this line
           itemBuilder: (context, index) => Table(
-              // border: TableBorder.lerp(
-              //     TableBorder(
-              //         top: BorderSide(color: Colors.black, width: 1, style: BorderStyle.solid),
-              //         bottom: BorderSide(color: Colors.black, width: 1, style: BorderStyle.solid),),
-              //     null, 1.0),
               key: ValueKey(this.tableRowList[index]),
               columnWidths: {
                 0: FlexColumnWidth(0.95),

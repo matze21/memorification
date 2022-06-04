@@ -157,16 +157,22 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
     }
   }
 
+  BoxDecoration boxDeco = BoxDecoration(color: Colors.black38, border:
+  Border(top:    BorderSide(color: Colors.white, width: 1, style: BorderStyle.solid),
+  bottom: BorderSide(color: Colors.white, width: 1, style: BorderStyle.solid),
+  ));
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: new Table(
+      appBar: AppBar(title: Text("Notification Schedule", style: TextStyle(fontSize: 24),)),
+      body: Table(
         columnWidths: {
           0: FlexColumnWidth(4),
           1: FlexColumnWidth(1),
         },
         children: [
-          TableRow(
+          TableRow(decoration: boxDeco,
             children: [Column(
               children: [Text('How many notifications per day would you like to receive'
                 , style: TextStyle(color: Colors.white, fontSize: 18)
@@ -198,7 +204,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
               )
             ]
           ),
-          TableRow(
+          TableRow(decoration: boxDeco,
               children: [Column(
                 children: [Text('Earliest notification you would like to receive'
                     , style: TextStyle(color: Colors.white, fontSize: 18)
@@ -233,7 +239,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
                 )
               ]
           ),
-          TableRow(
+          TableRow(decoration: boxDeco,
               children: [Column(
                 children: [Text('Latest notification you would like to receive'
                     , style: TextStyle(color: Colors.white, fontSize: 18)
@@ -299,7 +305,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
               ]
           )
         ],
-      ))
+      )
     );
   }
 

@@ -64,7 +64,27 @@ class _WordPairSettingsState extends State<WordPairSettings> {
             }
         )
       ],
+      ),
+      TableRow(children: [
+        ElevatedButton(
+            child: Text('Done Studying'),
+            onPressed: () async {
+              widget.wordPair.numberSeen = widget.wordPair.maxNumber;
+              await VocabDatabase.instance.updateWordPair(widget.wordPair, widget.tableName.getKey());
+
+              final prefs = await SharedPreferences.getInstance();
+              if((prefs.getInt('numNot') != null) && (prefs.getInt('startT')! != null) && (prefs.getInt('endT') != null) && (prefs.getString('currentStudyPackageString') != null)) {
+                int numNot = prefs.getInt('numNot')!;
+                int startT = prefs.getInt('startT')!;
+                int endT = prefs.getInt('endT')!;
+                String dataBaseKey = prefs.getString('currentStudyPackageString')!;
+                staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey);
+              }
+            }
+        )
+      ],
       )
+
     ]
     ),
     actions: [
