@@ -286,7 +286,10 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
                       onPrimary: Colors.white, // foreground
                     ),
                       onPressed: () async {
-                        await scheduleNotifications();
+                        final bool didUpdate = await staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey);
+                        setState(() {
+                          areScheduled = didUpdate;
+                        });
                         },
                       child: Text("schedule notifications"),
                   )
@@ -318,19 +321,20 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
       child: Text('Stop Notificaitons'),
     );
   }
+}
 
-  Future scheduleNotifications() async {
+class staticFunction {
+  static Future<bool> scheduleNotifications(int endT, int startT, int numNot, String? dataBaseKey) async {
     final bool isTimeValid = endT > startT;
     final bool isNumNotValid = numNot > 0;
+    bool didUpdate = false;
     if (dataBaseKey != null && isNumNotValid && isTimeValid) {  //&& tableNames.contains(currentStudyPackage!)
-      List<WordPair> wordPairs = await VocabDatabase.instance.readAllWordPairs(dataBaseKey!);
+      List<WordPair> wordPairs = await VocabDatabase.instance.readAllWordPairs(dataBaseKey);
 
       NotificationApi.init();
       final prefs = await SharedPreferences.getInstance();
-      setState(() {
-        areScheduled = true;
-        prefs.setBool('areScheduled', areScheduled);
-      });
+      prefs.setBool('areScheduled', true);
+      didUpdate = true;
       final now = DateTime.now();
       final int numNot_1 = (numNot ==1) ? 1 : numNot-1;
       final double timeDiffMinutes = (endT - startT) * 60 /(numNot_1);
@@ -351,8 +355,8 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
                 hour = now.hour;  // use the current time for the first notification start
                 minute += 5.0;    // add 5 min to get first notification
               } else if (globalNrNot == 0) {
-                  minute = 0.0;     // use the default time for the first notification if the startT is in the future
-                }
+                minute = 0.0;     // use the default time for the first notification if the startT is in the future
+              }
             }
 
             int addedHours   = (minute / 60).toInt();
@@ -382,9 +386,9 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
 
             globalNrNot += 1;
           }
-          await VocabDatabase.instance.updateWordPair(curWordPair, dataBaseKey!);
+          await VocabDatabase.instance.updateWordPair(curWordPair, dataBaseKey);
 
-          WordPair updatedWP = await VocabDatabase.instance.readWordPair(curWordPair.id!, dataBaseKey!);
+          WordPair updatedWP = await VocabDatabase.instance.readWordPair(curWordPair.id!, dataBaseKey);
           print('updatedWP ' + updatedWP.numberSeen.toString());
         }
       }
@@ -395,5 +399,6 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
       prefs.setInt('lastNot_hour',  endTime.hour);
       prefs.setInt('lastNot_min',   endTime.minute);
     }
+    return didUpdate;
   }
 }

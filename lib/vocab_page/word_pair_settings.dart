@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '/database/model.dart';
 import '/database/vocab_database.dart';
+import '/notifications/settings_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WordPairSettings extends StatefulWidget {
   const WordPairSettings(this.wordPair, this.tableName);
@@ -50,6 +52,15 @@ class _WordPairSettingsState extends State<WordPairSettings> {
             onPressed: () async {
               widget.wordPair.numberSeen = 0;
               await VocabDatabase.instance.updateWordPair(widget.wordPair, widget.tableName.getKey());
+
+              final prefs = await SharedPreferences.getInstance();
+              if((prefs.getInt('numNot') != null) && (prefs.getInt('startT')! != null) && (prefs.getInt('endT') != null) && (prefs.getString('currentStudyPackageString') != null)) {
+                  int numNot = prefs.getInt('numNot')!;
+                  int startT = prefs.getInt('startT')!;
+                  int endT = prefs.getInt('endT')!;
+                  String dataBaseKey = prefs.getString('currentStudyPackageString')!;
+                  staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey);
+              }
             }
         )
       ],
