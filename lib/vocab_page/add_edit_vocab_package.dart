@@ -55,13 +55,18 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         child: ListView.builder(
           itemCount: this.tableRowList.length, // Don't forget this line
           itemBuilder: (context, index) => Table(
-              border: TableBorder.all(),
+              // border: TableBorder.lerp(
+              //     TableBorder(
+              //         top: BorderSide(color: Colors.black, width: 1, style: BorderStyle.solid),
+              //         bottom: BorderSide(color: Colors.black, width: 1, style: BorderStyle.solid),),
+              //     null, 1.0),
               key: ValueKey(this.tableRowList[index]),
               columnWidths: {
-                0: FlexColumnWidth(1),
+                0: FlexColumnWidth(0.95),
                 1: FlexColumnWidth(3),
-                2: FlexColumnWidth(3),
-                3: FlexColumnWidth(1),
+                2: FlexColumnWidth(0.1),
+                3: FlexColumnWidth(3),
+                4: FlexColumnWidth(0.95),
               },
               children: [this.tableRowList[index]],
           ),
@@ -75,36 +80,35 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
     setState(() {
       this.tableRowList = [
         TableRow(children: [
-          Column(children: [
-          ]),
-          Column(children: [
-            Text(widget.tableName.base, style: TextStyle(
+          Column(children: []),
+          Column(children: [Align(child: Text(widget.tableName.base, style: TextStyle(
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
-            ))
+            )),
+            alignment: Alignment.centerLeft,)
           ]),
-          Column(children: [
-            Text(widget.tableName.second, style: TextStyle(
+          Column(children: []),
+          Column(children: [Align(child: Text(widget.tableName.second, style: TextStyle(
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
-            ))
+            )),
+            alignment: Alignment.centerLeft,)
           ]),
-          Column(children: [
-            Text(' ', style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ))
-          ]),
+          Column(children: []),
         ])
       ];
 
       if(curWordPairList.isNotEmpty) {
         for (WordPair wordPair in curWordPairList) {
           this.tableRowList.add(
-              TableRow(children: [
+              TableRow(
+               decoration: BoxDecoration(color: Colors.black38, border:
+                  Border(top:    BorderSide(color: Colors.white, width: 1, style: BorderStyle.solid),
+                         bottom: BorderSide(color: Colors.white, width: 1, style: BorderStyle.solid),
+                  )),
+               children: [
                 Container(child: settingsButton(wordPair)),
                 TextField(
                   controller: TextEditingController()..text = wordPair.baseWord,
@@ -114,6 +118,7 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
                     VocabDatabase.instance.updateWordPair(wordPair, widget.tableName.getKey());
                   },
                 ),
+                Column(children: []),
                 TextField(
                   controller: TextEditingController()..text = wordPair.translation,
                   style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold,),
@@ -151,7 +156,11 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         onPrimary: Colors.white,
-        primary: Colors.blueGrey.shade900
+        primary: Colors.transparent,
+        elevation: 0.0,
+        shadowColor: Colors.transparent,
+        minimumSize: Size.zero, // Set this
+        padding: EdgeInsets.zero, // and this
       ),
       onPressed: () async {
         final prefs            = await SharedPreferences.getInstance();
@@ -173,7 +182,11 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         onPrimary: Colors.white,
-        primary: Colors.blueGrey.shade900,
+        primary: Colors.transparent,
+        elevation: 0.0,
+        shadowColor: Colors.transparent,
+        minimumSize: Size.zero, // Set this
+        padding: EdgeInsets.zero, // and this
       ),
       onPressed: () async {
         await Navigator.of(context).push(MaterialPageRoute(builder: (context) => WordPairSettings(wordPair, widget.tableName)),);
