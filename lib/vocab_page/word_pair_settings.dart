@@ -17,12 +17,40 @@ class WordPairSettings extends StatefulWidget {
 class _WordPairSettingsState extends State<WordPairSettings> {
   late TextEditingController controllerBase;
   late double _value;
+  late bool didValueChange = false;
 
   @override
   void initState() {
     super.initState();
     controllerBase = TextEditingController();
     _value = widget.wordPair.maxNumber.toDouble();
+  }
+
+  Future updateSchedule() async {
+    await VocabDatabase.instance.updateWordPair(widget.wordPair, widget.tableName.getKey());
+
+    final prefs = await SharedPreferences.getInstance();
+    if((prefs.getInt('numNot') != null) && (prefs.getInt('startT')! != null) && (prefs.getInt('endT') != null) && (prefs.getString('currentStudyPackageString') != null)) {
+      int numNot = prefs.getInt('numNot')!;
+      int startT = prefs.getInt('startT')!;
+      int endT = prefs.getInt('endT')!;
+      String dataBaseKey = prefs.getString('currentStudyPackageString')!;
+      staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey, context);
+    }
+
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.transparent,
+      content: Align(child: Text("Updated Notifications", style: TextStyle(color: Colors.white),), alignment: Alignment.topCenter),
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Future.delayed(Duration(seconds: 1), () {
+          Navigator.of(context).pop(true);
+        });
+        return alert;
+      },
+    );
   }
 
   @override
@@ -36,50 +64,32 @@ class _WordPairSettingsState extends State<WordPairSettings> {
           value: _value,
           label: '${_value.round()}',
           divisions: 50,
-          onChanged: (value) async {
+          onChanged: (value) {
             setState(() {
               _value = value;
+              didValueChange = true;
             });
             widget.wordPair.maxNumber = _value.toInt();
-            await VocabDatabase.instance.updateWordPair(widget.wordPair, widget.tableName.getKey());
           },
         )
       ],
       ),
       TableRow(children: [
         ElevatedButton(
-            child: Text('Study again'),
+            child: Text('Study word pair again'),
             onPressed: () async {
               widget.wordPair.numberSeen = 0;
-              await VocabDatabase.instance.updateWordPair(widget.wordPair, widget.tableName.getKey());
-
-              final prefs = await SharedPreferences.getInstance();
-              if((prefs.getInt('numNot') != null) && (prefs.getInt('startT')! != null) && (prefs.getInt('endT') != null) && (prefs.getString('currentStudyPackageString') != null)) {
-                  int numNot = prefs.getInt('numNot')!;
-                  int startT = prefs.getInt('startT')!;
-                  int endT = prefs.getInt('endT')!;
-                  String dataBaseKey = prefs.getString('currentStudyPackageString')!;
-                  staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey);
-              }
+              await updateSchedule();
             }
         )
       ],
       ),
       TableRow(children: [
         ElevatedButton(
-            child: Text('Done Studying'),
+            child: Text('Done Studying word pair'),
             onPressed: () async {
               widget.wordPair.numberSeen = widget.wordPair.maxNumber;
-              await VocabDatabase.instance.updateWordPair(widget.wordPair, widget.tableName.getKey());
-
-              final prefs = await SharedPreferences.getInstance();
-              if((prefs.getInt('numNot') != null) && (prefs.getInt('startT')! != null) && (prefs.getInt('endT') != null) && (prefs.getString('currentStudyPackageString') != null)) {
-                int numNot = prefs.getInt('numNot')!;
-                int startT = prefs.getInt('startT')!;
-                int endT = prefs.getInt('endT')!;
-                String dataBaseKey = prefs.getString('currentStudyPackageString')!;
-                staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey);
-              }
+              await updateSchedule();
             }
         )
       ],
@@ -90,8 +100,10 @@ class _WordPairSettingsState extends State<WordPairSettings> {
     actions: [
       ElevatedButton(
           child: Text('Done'),
-          onPressed: () {
+          onPressed: () async {
             Navigator.of(context).pop();
+
+            if(didValueChange) { await updateSchedule(); }
           }
       )
     ],
