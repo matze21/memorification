@@ -6,6 +6,7 @@ import '/database/model.dart';
 import '/database/vocab_database.dart';
 import 'add_word_pair.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'word_pair_settings.dart';
 
 class AddEditPackagePage extends StatefulWidget {
   const AddEditPackagePage(this.tableName);
@@ -75,11 +76,6 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
       this.tableRowList = [
         TableRow(children: [
           Column(children: [
-            Text('ID', style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ))
           ]),
           Column(children: [
             Text(widget.tableName.base, style: TextStyle(
@@ -109,9 +105,7 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         for (WordPair wordPair in curWordPairList) {
           this.tableRowList.add(
               TableRow(children: [
-                Center(child: Text(wordPair.id.toString(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold,))),
+                Container(child: settingsButton(wordPair)),
                 TextField(
                   controller: TextEditingController()..text = wordPair.baseWord,
                   style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold,),
@@ -157,7 +151,7 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         onPrimary: Colors.white,
-        primary: Colors.grey.shade700,
+        primary: Colors.blueGrey.shade900
       ),
       onPressed: () async {
         final prefs            = await SharedPreferences.getInstance();
@@ -171,9 +165,24 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         },
         child: Icon(
           Icons.delete,
-          size: 20.0,
         ),
       );
+  }
+
+  Widget settingsButton(WordPair wordPair) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        onPrimary: Colors.white,
+        primary: Colors.blueGrey.shade900,
+      ),
+      onPressed: () async {
+        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => WordPairSettings(wordPair, widget.tableName)),);
+      },
+      child: Icon(
+        Icons.settings,
+
+      ),
+    );
   }
 }
 

@@ -344,10 +344,18 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
         print('numSeen ' + curWordPair.numberSeen.toString());
         if(curWordPair.numberSeen < curWordPair.maxNumber) {
           for (int i = 0; i < curWordPair.maxNumber; i++) {
-            int addedHours   = (minute / 60).toInt();
 
             int hour = startT;
-            if((globalNrNot < initialNotNr) && (now.hour>startT)) { hour = now.hour; }
+            if(globalNrNot < initialNotNr) {
+              if(now.hour>startT) {
+                hour = now.hour;  // use the current time for the first notification start
+                minute += 5.0;    // add 5 min to get first notification
+              } else if (globalNrNot == 0) {
+                  minute = 0.0;     // use the default time for the first notification if the startT is in the future
+                }
+            }
+
+            int addedHours   = (minute / 60).toInt();
             if(((addedHours + hour) > endT) ||(((addedHours + hour) == endT) && (numNot == 1))) {
               addedDay = addedDay + 1;
               minute = 0.0;
