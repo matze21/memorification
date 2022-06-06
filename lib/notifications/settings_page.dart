@@ -384,11 +384,15 @@ class staticFunction {
 
             int hour = startT;
             if(globalNrNot < initialNotNr) {
-              if(now.hour>startT) {
+              if(now.hour>=startT) {
                 hour = now.hour;  // use the current time for the first notification start
-                minute += 5.0;    // add 5 min to get first notification
-              } else if (globalNrNot == 0) {
-                minute = 0.0;     // use the default time for the first notification if the startT is in the future
+                if (globalNrNot == 0) {
+                  minute += 5.0;     // use the default time for the first notification if the startT is in the future
+                }
+              } else {
+                if (globalNrNot == 0) {
+                  minute = 0.0;     // use the default time for the first notification if the startT is in the future
+                }
               }
             }
 
