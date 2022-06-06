@@ -309,6 +309,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
     return ElevatedButton(
       onPressed: () async {
         final prefs = await SharedPreferences.getInstance();
+        prefs.remove('currentStudyPackageString');
         await resetSchedule();
         setState(() {
           areScheduled = false;

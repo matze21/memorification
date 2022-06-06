@@ -20,6 +20,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   bool isPackageExisting = false;
   int notificationNr = 0;
   databaseKey? currentStudyPackage = null;
+  List<databaseKey> tableNames = [];
 
   @override
   void initState() {
@@ -35,7 +36,9 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   Future refreshVocabPackages() async {
     setState(() => isLoading = true);
 
-    await VocabDatabase.instance.getAllExistingDataTables();
+    List<databaseKey> tableNamesCopy = await VocabDatabase.instance.getAllExistingDataTables();
+    setState(() { tableNames = tableNamesCopy; });
+
     if(tableNames.isNotEmpty) {
         setState(() => isPackageExisting = true);
     }

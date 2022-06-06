@@ -1,5 +1,3 @@
-List<databaseKey> tableNames = [];  // for now only work with one language
-
 class databaseKeyFields {
   static final List<String> values = [base, second];
 

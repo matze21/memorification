@@ -16,7 +16,7 @@ class VocabDatabase {
     } else {
       _database = await _initDB('vocabs.db');
       createDefaultPackage(); //create default table
-      return _database!;
+      return instance.database;
     }
   }
 
@@ -60,10 +60,11 @@ CREATE TABLE $tableName (
     tables.remove('android_metadata');
     tables.remove('sqlite_sequence');
 
-    tableNames = [];
+    List<databaseKey> tableNames = [];
     for(String table in tables) {
       tableNames.add(databaseKey.getDataBaseKeyFromKey(table));
-      }
+    }
+    return tableNames;
   }
 
   Future addWordPair(WordPair note, String tableName) async {
