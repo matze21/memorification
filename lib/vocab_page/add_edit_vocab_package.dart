@@ -40,7 +40,7 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      actions: [buildNewButton()],
+      actions: [buildNewButton(), studyAgainButton()],
     ),
     body: isLoading
         ? Center(child: CircularProgressIndicator())
@@ -143,6 +143,26 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
           await getWordPairs();
         },
         child: Text('Add Pair'),
+      ),
+    );
+  }
+
+  Widget studyAgainButton() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          onPrimary: Colors.white,
+          primary: Colors.grey.shade700,
+        ),
+        onPressed: () async {
+
+          for(WordPair wp in curWordPairList) {
+            wp.numberSeen = 0;
+            await VocabDatabase.instance.updateWordPair(wp, widget.tableName.getKey());
+          }
+        },
+        child: Text('Study all again'),
       ),
     );
   }
