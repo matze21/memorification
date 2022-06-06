@@ -14,9 +14,11 @@ class AddVocabPackagePage extends StatefulWidget {
 
 class _AddVocabPackagePageState extends State<AddVocabPackagePage> {
   final _formKey = GlobalKey<FormState>();
+  final String addString = 'additional description';
 
   late TextEditingController controllerFirst;
   late TextEditingController controllerSecond;
+  late TextEditingController controllerAdd;
 
   @override
   void initState() {
@@ -24,6 +26,7 @@ class _AddVocabPackagePageState extends State<AddVocabPackagePage> {
 
     controllerFirst = TextEditingController();
     controllerSecond = TextEditingController();
+    controllerAdd = TextEditingController();
   }
 
   @override
@@ -47,29 +50,40 @@ class _AddVocabPackagePageState extends State<AddVocabPackagePage> {
             border: OutlineInputBorder(),
           ),
         )],
+      ),
+      TableRow(children: [
+        TextField(
+          controller: controllerAdd..text = addString,
+          onTap: () {controllerAdd.clear(); },
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+          ),
+        )],
       )]
+
     ),
     actions: [
       ElevatedButton(
         child: Text('Done'),
         onPressed: ()  {
-          final databaseKey curTableName = addDatabaseTable(controllerFirst.text, controllerSecond.text);
-          Navigator.of(context).pop();
-
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => AddEditPackagePage(curTableName)),
-          );
-
-
+          if(controllerAdd.text != addString){
+            final databaseKey curTableName = addDatabaseTable(controllerFirst.text, controllerSecond.text, controllerAdd.text);
+            Navigator.of(context).pop();
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddEditPackagePage(curTableName)),);
+          } else {
+            final databaseKey curTableName = addDatabaseTable(controllerFirst.text, controllerSecond.text, null);
+            Navigator.of(context).pop();
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddEditPackagePage(curTableName)),);
+          }
         }
       )
     ],
   );
 }
 
-databaseKey addDatabaseTable(String firstLanguage, String secondLanguage)
+databaseKey addDatabaseTable(String firstLanguage, String secondLanguage, String? add)
 {
-  databaseKey key = databaseKey(base: firstLanguage, second: secondLanguage);
+  databaseKey key = databaseKey(base: firstLanguage, second: secondLanguage, addition: add);
   VocabDatabase.createDB(key.getKey());
 
   return key;

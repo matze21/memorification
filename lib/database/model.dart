@@ -1,37 +1,56 @@
 class databaseKeyFields {
-  static final List<String> values = [base, second];
+  static final List<String> values = [base, second, addition];
 
   static final String base = 'base';
   static final String second = 'second';
+  static final String addition = 'addition';
 }
 
 class databaseKey {
   final String base;
   final String second;
+  String? addition;
 
   databaseKey({
       required this.base,
-      required this.second});
+      required this.second,
+      this.addition});
 
   static databaseKey getDataBaseKeyFromKey(String key){
-    int separateIdx = -1;
+    int separateIdx1 = -1;
+    int separateIdx2 = -1;
     for(int i=0; i<key.length; i++) {
-        if(key[i] == '_'){
-          separateIdx = i;
+        if((key[i] == '_') && (separateIdx2 == -1) && (separateIdx1 != -1)){
+          separateIdx2 = i;
+        }
+        if((key[i] == '_') && (separateIdx1 == -1)){
+          separateIdx1= i;
         }
       }
-    String base = key.substring(0, separateIdx);
-    String second = key.substring(separateIdx+1, key.length);
-    return databaseKey(base: base, second: second);
+    String base = key.substring(0, separateIdx1);
+    if(separateIdx2 != -1) {
+      String second   = key.substring(separateIdx1+1, separateIdx2);
+      String addition = key.substring(separateIdx2+1, key.length);
+      return databaseKey(base: base, second: second, addition: addition);
+    } else {
+      String second = key.substring(separateIdx1+1, key.length);
+      return databaseKey(base: base, second: second);
+    }
+
   }
 
-  String getKey(){
-    return base + '_' + second;
+  String getKey({String space = '_'}){
+    if(addition == null) {
+      return base + space + second;
+    } else {
+      return base + space + second + space + addition!;
+    }
   }
 
   static databaseKey fromJson(Map<String, Object?> json) => databaseKey(
     base: json[databaseKeyFields.base] as String,
-    second: json[databaseKeyFields.second] as String);
+    second: json[databaseKeyFields.second] as String,
+    addition: (json[databaseKeyFields.addition] != null) ? json[databaseKeyFields.second] as String : null);
 }
 
 final int DEFAULT_MAX_NR_NOTIF = 10;

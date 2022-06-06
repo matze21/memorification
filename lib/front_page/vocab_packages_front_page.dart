@@ -65,7 +65,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
           children: [Container(width: 200, child: Text(
               (currentStudyPackage == null)
                   ? 'No package selected'
-                  : 'Studying: ' + currentStudyPackage!.base +' ' + currentStudyPackage!.second
+                  : 'Studying: ' + currentStudyPackage!.getKey(space: ' ')
               , style: TextStyle(color: Colors.white, fontSize: 18)
           ),)],),
         ]
@@ -158,8 +158,8 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 4),
-            Text(
-              vocabPackage.base + ' ' + vocabPackage.second,
+            Text( (vocabPackage.addition == null) ? (vocabPackage.base + ' ' + vocabPackage.second) :
+              (vocabPackage.base + ' ' + vocabPackage.second + ' ' + vocabPackage.addition!),
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 20,
