@@ -15,8 +15,8 @@ class VocabDatabase {
       return _database!;
     } else {
       _database = await _initDB('vocabs.db');
-      createDefaultPackage(); //create default table
-      return instance.database;
+      createDefaultPackage(_database!); //create default table
+      return _database!;
     }
   }
 
@@ -28,14 +28,12 @@ class VocabDatabase {
     return db;
   }
 
-  static Future createDB(String tableName) async {
+  static Future createDBintern(Database db, String tableName) async {
     final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     final textType = 'TEXT NOT NULL';
     final integerType = 'INTEGER NOT NULL';
 
-    final db = await instance.database;
-
-      await db.execute('''
+    await db.execute('''
 CREATE TABLE $tableName ( 
   ${WordPairFields.id} $idType, 
   ${WordPairFields.numberSeen} $integerType,
@@ -44,6 +42,10 @@ CREATE TABLE $tableName (
   ${WordPairFields.maxNumber} $integerType
   )
 ''');
+  }
+
+  static Future createDB(String tableName) async {
+    createDBintern(await instance.database, tableName);
   }
 
   Future deleteDB(String tableName) async {
@@ -125,10 +127,10 @@ CREATE TABLE $tableName (
     db.close();
   }
 
-  Future createDefaultPackage() async {
+  Future createDefaultPackage(Database db) async {
 
     String fileName = 'spanish_english_verbs';
-    createDB(fileName);
+    createDBintern(db, fileName);
 
     final List<List<dynamic>> csvData = await loadCSVtoDB(fileName);
     for(int i = 0; i < csvData.length; i++) {
