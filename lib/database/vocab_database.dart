@@ -53,8 +53,7 @@ CREATE TABLE $tableName (
     await db.execute("DROP TABLE $tableName");
   }
 
-  Future getAllExistingDataTables() async {
-    final db = await instance.database;
+  Future getAllExistingDataTablesIntern(final Database db) async {
     var tables = (await db
         .query('sqlite_master', where: 'type = ?', whereArgs: ['table']))
         .map((row) => row['name'] as String)
@@ -67,6 +66,11 @@ CREATE TABLE $tableName (
       tableNames.add(databaseKey.getDataBaseKeyFromKey(table));
     }
     return tableNames;
+  }
+
+  Future getAllExistingDataTables() async {
+    final db = await instance.database;
+    return getAllExistingDataTablesIntern(db);
   }
 
   Future addWordPair(WordPair note, String tableName) async {
@@ -130,12 +134,24 @@ CREATE TABLE $tableName (
   Future createDefaultPackage(Database db) async {
 
     String fileName = 'spanish_english_verbs';
-    createDBintern(db, fileName);
 
-    final List<List<dynamic>> csvData = await loadCSVtoDB(fileName);
-    for(int i = 0; i < csvData.length; i++) {
-      WordPair newWordPair = WordPair(baseWord: csvData[i][0], translation: csvData[i][1], numberSeen: 0, maxNumber: 10); //DEFAULT_MAX_NR_NOTIF);
-      addWordPair(newWordPair, fileName);
+    List<databaseKey> tables = await getAllExistingDataTablesIntern(db);
+    List<String> names = [];
+    for(databaseKey table in tables) {
+      names.add(table.getKey(space: '_'));
+    }
+
+    if(names.contains(fileName) == false) {
+      createDBintern(db, fileName);
+
+      final List<List<dynamic>> csvData = await loadCSVtoDB(fileName);
+      for (int i = 0; i < csvData.length; i++) {
+        WordPair newWordPair = WordPair(baseWord: csvData[i][0],
+            translation: csvData[i][1],
+            numberSeen: 0,
+            maxNumber: 10); //DEFAULT_MAX_NR_NOTIF);
+        addWordPair(newWordPair, fileName);
+      }
     }
   }
 
