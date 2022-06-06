@@ -1,6 +1,7 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import './model.dart';
+import './read_csv.dart';
 
 class VocabDatabase {
   static final VocabDatabase instance = VocabDatabase._init();
@@ -10,17 +11,21 @@ class VocabDatabase {
   VocabDatabase._init();
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
-
-    _database = await _initDB('vocabs.db');
-    return _database!;
+    if (_database != null) {
+      return _database!;
+    } else {
+      _database = await _initDB('vocabs.db');
+      createDefaultPackage(); //create default table
+      return _database!;
+    }
   }
 
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1); //, onCreate: _createDB);
+    Database db = await openDatabase(path, version: 1); //, onCreate: _createDB);
+    return db;
   }
 
   static Future createDB(String tableName) async {
@@ -44,7 +49,6 @@ CREATE TABLE $tableName (
   Future deleteDB(String tableName) async {
     final db = await instance.database;
     await db.execute("DROP TABLE $tableName");
-    //db.delete(tableName);
   }
 
   Future getAllExistingDataTables() async {
@@ -55,21 +59,17 @@ CREATE TABLE $tableName (
         .toList(growable: true);
     tables.remove('android_metadata');
     tables.remove('sqlite_sequence');
-    //final tables = await db.rawQuery('SELECT * FROM sqlite_master ORDER BY name;');
-    //return tables.map((json) => databaseKey.fromJson(json)).toList();
 
     tableNames = [];
-    //print(tables);
     for(String table in tables) {
       tableNames.add(databaseKey.getDataBaseKeyFromKey(table));
       }
   }
 
-  Future<WordPair> addWordPair(WordPair note, String tableName) async {
+  Future addWordPair(WordPair note, String tableName) async {
     final db = await instance.database;
 
     final id = await db.insert(tableName, note.toJson());
-    return note.copy(id: id);
   }
 
   Future<WordPair> readWordPair(int id, String tableName) async {
@@ -93,25 +93,10 @@ CREATE TABLE $tableName (
     final db = await instance.database;
 
     final orderBy = '${WordPairFields.baseWord} ASC';
-    // final result =
-    //     await db.rawQuery('SELECT * FROM $tableNotes ORDER BY $orderBy');
-
     final result = await db.query(tableName, orderBy: orderBy);
 
     return result.map((json) => WordPair.fromJson(json)).toList();
   }
-
-/*  List<WordPair> readAllWordPairsStatic(String tableName) {
-    final Database db = _database!;
-
-    final orderBy = '${WordPairFields.baseWord} ASC';
-    // final result =
-    //     await db.rawQuery('SELECT * FROM $tableNotes ORDER BY $orderBy');
-
-    final result = db.query(tableName, orderBy: orderBy);
-
-    return result.map((json) => WordPair.fromJson(json)).toList();
-  }*/
 
   Future<int> updateWordPair(WordPair note, String tableName) async {
     final db = await instance.database;
@@ -136,7 +121,19 @@ CREATE TABLE $tableName (
 
   Future close() async {
     final db = await instance.database;
-
     db.close();
   }
+
+  Future createDefaultPackage() async {
+
+    String fileName = 'spanish_english_verbs';
+    createDB(fileName);
+
+    final List<List<dynamic>> csvData = await loadCSVtoDB(fileName);
+    for(int i = 0; i < csvData.length; i++) {
+      WordPair newWordPair = WordPair(baseWord: csvData[i][0], translation: csvData[i][1], numberSeen: 0, maxNumber: 10); //DEFAULT_MAX_NR_NOTIF);
+      addWordPair(newWordPair, fileName);
+    }
+  }
+
 }

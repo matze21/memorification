@@ -35,22 +35,23 @@ class _WordPairSettingsState extends State<WordPairSettings> {
       int startT = prefs.getInt('startT')!;
       int endT = prefs.getInt('endT')!;
       String dataBaseKey = prefs.getString('currentStudyPackageString')!;
-      staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey, context);
-    }
+      bool didUpdate = await staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey, context);
 
-    AlertDialog alert = AlertDialog(
-      backgroundColor: Colors.transparent,
-      content: Align(child: Text("Updated Notifications", style: TextStyle(color: Colors.white),), alignment: Alignment.topCenter),
-    );
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        Future.delayed(Duration(seconds: 1), () {
-          Navigator.of(context).pop(true);
-        });
-        return alert;
-      },
-    );
+      if (didUpdate) {
+        AlertDialog alert = AlertDialog(
+          backgroundColor: Colors.transparent,
+          content: Align(child: Text("Updated Notifications", style: TextStyle(color: Colors.white),), alignment: Alignment.topCenter));
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            Future.delayed(Duration(seconds: 1), () {
+              Navigator.of(context).pop(true);
+            });
+            return alert;
+          },
+        );
+      }
+    }
   }
 
   @override

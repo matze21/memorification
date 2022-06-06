@@ -5,15 +5,9 @@ app specific PW vxdp-ttlp-kxwl-wieo
 
 epics
 1. better menu for databank
-- add max number of notifications
-- remove id
-- add a settings button for every word / or long click!
-- only update notification schedule if something is changing
 - study dataset again button
-2. beautification
-- make front page & training button nice
-- displays error messages (didn't set database when scheduling / "currently training for .." / finished dataset / no vocab)
 3. have default databanks (search through by button, not editable?)
+4. have more than 500 notifications / schedule next notification if old one is displayed
 4. adds
 
 - add a in progress icon of which word we currently learning (low prio)

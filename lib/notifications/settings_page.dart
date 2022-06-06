@@ -12,7 +12,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Page2 extends StatefulWidget {
   const Page2( {Key? key}) : super(key: key);
-// todo: add currentStudyPackage to constructor and state, rebuild widget when state changes & therefore update notification schedule
 
   @override
   _MyPage2State createState() => _MyPage2State();
@@ -46,9 +45,6 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
-    setState(() {
-      areScheduled = false;
-    });
     super.dispose();
   }
 
@@ -106,7 +102,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
         numNot = prefs.getInt('numNot')!;
       });
     }
-    if(prefs.getInt('startT')! != null) {
+    if(prefs.getInt('startT') != null) {
       setState(() {
         startT = prefs.getInt('startT')!;
       });

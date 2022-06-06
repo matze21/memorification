@@ -24,7 +24,6 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   @override
   void initState() {
     super.initState();
-    //tableNames = [];  // add predefined libraries?
     refreshVocabPackages();
   }
 
@@ -62,7 +61,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
         TableRow(
           children: [Container(width: 200, child: Text(
               (currentStudyPackage == null)
-                  ? 'No package selected for studying'
+                  ? 'No package selected'
                   : 'Studying: ' + currentStudyPackage!.base +' ' + currentStudyPackage!.second
               , style: TextStyle(color: Colors.white, fontSize: 18)
           ),)],),
