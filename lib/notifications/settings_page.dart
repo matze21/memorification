@@ -7,6 +7,7 @@ import '/front_page/vocab_packages_front_page.dart';
 import '/notifications/notification_api.dart';
 import '/database/vocab_database.dart';
 import '/database/model.dart';
+import './schedule_notifications.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -117,7 +118,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
         dataBaseKey = prefs.getString('currentStudyPackageString')!;
       });
     }
-    if(prefs.getBool('areScheduled') != null)   {
+    if(prefs.getBool('areScheduled') != null) {
       setState(() {
         areScheduled = prefs.getBool('areScheduled')!;
         if(dataBaseKey == null && areScheduled) {
@@ -125,31 +126,6 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
             prefs.setBool('areScheduled', areScheduled);
           }
       });
-    }
-    if(areScheduled) {
-      if(prefs.getInt('lastNot_year') != null)  { lastNot_year = prefs.getInt('lastNot_year')!; }
-      if(prefs.getInt('lastNot_month') != null) { lastNot_month = prefs.getInt('lastNot_month')!; }
-      if(prefs.getInt('lastNot_day') != null)   { lastNot_day = prefs.getInt('lastNot_day')!; }
-      if(prefs.getInt('lastNot_hour') != null)  { lastNot_hour = prefs.getInt('lastNot_hour')!; }
-      if(prefs.getInt('lastNot_min') != null)   { lastNot_min = prefs.getInt('lastNot_min')!; }
-
-      if((lastNot_year != null) && (lastNot_month != null) && (lastNot_day != null) && (lastNot_hour != null) && (lastNot_min != null)) {
-        final now = DateTime.now();
-        final lastNot = DateTime(lastNot_year!, lastNot_month!, lastNot_day!, lastNot_hour!, lastNot_min!, 0);
-        if (now.isAfter(lastNot)) {
-          setState(() {
-            areScheduled = false;
-            prefs.setBool('areScheduled', areScheduled);
-          });
-        }
-      }
-    }
-    if(areScheduled == false) {
-      prefs.remove('lastNot_year');
-      prefs.remove('lastNot_month');
-      prefs.remove('lastNot_day');
-      prefs.remove('lastNot_hour');
-      prefs.remove('lastNot_min');
     }
   }
 
@@ -288,9 +264,12 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
                       onPrimary: Colors.white, // foreground
                     ),
                       onPressed: () async {
-                        final bool didUpdate = await staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey, context);
+                        staticFunction.showErrorMessages(endT, startT, numNot, dataBaseKey, context);
+                        final bool didUpdate = await staticFunction.scheduleNotificationsPerDay(endT, startT, numNot, dataBaseKey, true);
+                        final prefs = await SharedPreferences.getInstance();
+                        bool? areScheduledInternal = prefs.getBool('areScheduled');
                         setState(() {
-                          areScheduled = didUpdate;
+                          areScheduled = (areScheduledInternal != null) ? areScheduledInternal! : false;
                         });
                         },
                       child: Text("schedule notifications"),
@@ -313,129 +292,10 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
         await resetSchedule();
         setState(() {
           areScheduled = false;
-          prefs.setBool('areScheduled', areScheduled);
-          prefs.remove('lastNot_year');
-          prefs.remove('lastNot_month');
-          prefs.remove('lastNot_day');
-          prefs.remove('lastNot_hour');
-          prefs.remove('lastNot_min');
         });
+        //Workmanager().cancelByUniqueName("dailyNotificationSchedule");
       },
       child: Text('Stop Notificaitons'),
     );
-  }
-}
-
-class staticFunction {
-  static Future<bool> scheduleNotifications(int endT, int startT, int numNot, String? dataBaseKey, BuildContext context) async {
-    final bool isTimeValid = endT > startT;
-    final bool isNumNotValid = numNot > 0;
-    bool didUpdate = false;
-    if(dataBaseKey == null){
-      AlertDialog alert = AlertDialog(
-        backgroundColor: Colors.transparent,
-        content: Align(child: Text("Error: choose package first", style: TextStyle(color: Colors.white),), alignment: Alignment.center),
-      );
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          Future.delayed(Duration(seconds: 4), () {
-            Navigator.of(context).pop(true);
-          });
-          return alert;
-        },
-      );
-    }
-    if(isTimeValid == false){
-      AlertDialog alert = AlertDialog(
-        backgroundColor: Colors.transparent,
-        content: Align(child: Text("Error: end time is before start time", style: TextStyle(color: Colors.white),), alignment: Alignment.center),
-      );
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          Future.delayed(Duration(seconds: 4), () {
-            Navigator.of(context).pop(true);
-          });
-          return alert;
-        },
-      );
-    }
-    if (dataBaseKey != null && isNumNotValid && isTimeValid) {  //&& tableNames.contains(currentStudyPackage!)
-      List<WordPair> wordPairs = await VocabDatabase.instance.readAllWordPairs(dataBaseKey);
-
-      NotificationApi.init();
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setBool('areScheduled', true);
-      didUpdate = true;
-      final now = DateTime.now();
-      final int numNot_1 = (numNot ==1) ? 1 : numNot-1;
-      final double timeDiffMinutes = (endT - startT) * 60 /(numNot_1);
-      final int initialNotNr = ((endT - now.hour) * 60 / timeDiffMinutes).toInt();
-      double minute = now.minute.toDouble();
-
-      int globalNrNot = 0;
-      DateTime endTime = now;
-      int addedDay =0;
-      for(WordPair curWordPair in wordPairs){
-        print('numSeen ' + curWordPair.numberSeen.toString());
-        if(curWordPair.numberSeen < curWordPair.maxNumber) {
-          for (int i = 0; i < curWordPair.maxNumber; i++) {
-
-            int hour = startT;
-            if(globalNrNot < initialNotNr) {
-              if(now.hour>=startT) {
-                hour = now.hour;  // use the current time for the first notification start
-                if (globalNrNot == 0) {
-                  minute += 5.0;     // use the default time for the first notification if the startT is in the future
-                }
-              } else {
-                if (globalNrNot == 0) {
-                  minute = 0.0;     // use the default time for the first notification if the startT is in the future
-                }
-              }
-            }
-
-            int addedHours   = (minute / 60).toInt();
-            if(((addedHours + hour) > endT) ||(((addedHours + hour) == endT) && (numNot == 1))) {
-              addedDay = addedDay + 1;
-              minute = 0.0;
-              addedHours = 0;
-            }
-
-            final int addedMinutes = (minute - addedHours * 60).toInt();
-
-
-            DateTime scheduledTime = DateTime(now.year, now.month, now.day + addedDay, hour + addedHours, addedMinutes, 0);
-            endTime = scheduledTime;
-            NotificationApi.showScheduledNotification(
-              notID: globalNrNot,
-              title: curWordPair.baseWord,
-              body: curWordPair.translation,
-              payload: curWordPair.numberSeen.toString(),
-              scheduledTime: scheduledTime,
-            );
-
-            print(globalNrNot.toString() + ' ' + scheduledTime.toString());
-
-            minute = minute + timeDiffMinutes;
-            curWordPair.iterateNumSeen();
-
-            globalNrNot += 1;
-          }
-          await VocabDatabase.instance.updateWordPair(curWordPair, dataBaseKey);
-
-          WordPair updatedWP = await VocabDatabase.instance.readWordPair(curWordPair.id!, dataBaseKey);
-          print('updatedWP ' + updatedWP.numberSeen.toString());
-        }
-      }
-
-      prefs.setInt('lastNot_year',  endTime.year);
-      prefs.setInt('lastNot_month', endTime.month);
-      prefs.setInt('lastNot_day',   endTime.day);
-      prefs.setInt('lastNot_hour',  endTime.hour);
-      prefs.setInt('lastNot_min',   endTime.minute);
-    }
-    return didUpdate;
   }
 }

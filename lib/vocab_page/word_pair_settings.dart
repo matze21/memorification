@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/database/model.dart';
 import '/database/vocab_database.dart';
-import '/notifications/settings_page.dart';
+import '/notifications/schedule_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WordPairSettings extends StatefulWidget {
@@ -28,30 +28,6 @@ class _WordPairSettingsState extends State<WordPairSettings> {
 
   Future updateSchedule() async {
     await VocabDatabase.instance.updateWordPair(widget.wordPair, widget.tableName.getKey());
-
-    final prefs = await SharedPreferences.getInstance();
-    if((prefs.getInt('numNot') != null) && (prefs.getInt('startT')! != null) && (prefs.getInt('endT') != null) && (prefs.getString('currentStudyPackageString') != null)) {
-      int numNot = prefs.getInt('numNot')!;
-      int startT = prefs.getInt('startT')!;
-      int endT = prefs.getInt('endT')!;
-      String dataBaseKey = prefs.getString('currentStudyPackageString')!;
-      bool didUpdate = await staticFunction.scheduleNotifications(endT, startT, numNot, dataBaseKey, context);
-
-      if (didUpdate) {
-        AlertDialog alert = AlertDialog(
-          backgroundColor: Colors.transparent,
-          content: Align(child: Text("Updated Notifications", style: TextStyle(color: Colors.white),), alignment: Alignment.topCenter));
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            Future.delayed(Duration(seconds: 1), () {
-              Navigator.of(context).pop(true);
-            });
-            return alert;
-          },
-        );
-      }
-    }
   }
 
   @override
