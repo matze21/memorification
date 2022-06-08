@@ -20,8 +20,6 @@ class staticFunction {
 
       if((isFirstCall) || ((areScheduled != null) && areScheduled)) {
         NotificationApi.init();
-        prefs.setBool('areScheduled', true);
-        didUpdate = true;
 
         final now = DateTime.now();
         final int numNot_1 = (numNot == 1) ? 1 : numNot - 1;
@@ -41,6 +39,9 @@ class staticFunction {
                     if (globalNrNot == 0) { //if first call add some minutes
                       minute = now.minute.toDouble() + 5.0;
                     }
+                    if(now.hour >= endT){
+                      break;
+                    }
                   }
                 }
 
@@ -52,7 +53,7 @@ class staticFunction {
                   payload: curWordPair.numberSeen.toString(),
                   scheduledTime: scheduledTime,
                 );
-
+                didUpdate = true;
                 print(globalNrNot.toString() + ' ' + scheduledTime.toString());
 
                 minute = minute + timeDiffMinutes;
@@ -70,6 +71,7 @@ class staticFunction {
             }
           }
         }
+        prefs.setBool('areScheduled', didUpdate);
       }
     }
     return didUpdate;
