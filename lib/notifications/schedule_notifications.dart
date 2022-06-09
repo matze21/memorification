@@ -23,28 +23,29 @@ class staticFunction {
 
         final now = DateTime.now();
         final int numNot_1 = (numNot == 1) ? 1 : numNot - 1;
-        final double timeDiffMinutes = (endT - startT) * 60 / (numNot_1);
         double minute = 0.0;
 
         int globalNrNot = 0;
         int hour = startT;
+
+        if (isFirstCall) {
+          if (now.hour >= startT) { //if startT is already in the past use the current time
+            hour = now.hour;
+            if (globalNrNot == 0) { //if first call add some minutes
+              minute = now.minute.toDouble() + 5.0;
+            }
+          }
+        }
+        final double timeDiffMinutes = (hour - startT) * 60 / (numNot_1);
+
         for (WordPair curWordPair in wordPairs) {
           if (curWordPair.numberSeen < curWordPair.maxNumber) {
             for (int i = 0; i < curWordPair.maxNumber; i++) {
               if (globalNrNot < numNot) {
 
-                if (isFirstCall) {
-                  if (now.hour >= startT) { //if startT is already in the past use the current time
-                    hour = now.hour;
-                    if (globalNrNot == 0) { //if first call add some minutes
-                      minute = now.minute.toDouble() + 5.0;
-                    }
-                    if(now.hour >= endT){
-                      break;
-                    }
-                  }
+                if(isFirstCall && now.hour >= endT){
+                  break;
                 }
-
                 DateTime scheduledTime = DateTime(now.year, now.month, now.day, hour, minute.toInt(), 0);
                 NotificationApi.showScheduledNotification(
                   notID: globalNrNot,
