@@ -4,27 +4,14 @@ git token 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
 app specific PW vxdp-ttlp-kxwl-wieo
 
 epics
-1. better menu for databank
-- study dataset again button
+2. make app work faster
+	- faster databank requests (from json function better?)
 3. have default databanks (search through by button, not editable?)
-4. have more than 500 notifications / schedule next notification if old one is displayed
+	- add default databanks from quizzlet & duolingo
 4. adds
 
 - add a in progress icon of which word we currently learning (low prio)
 
-
-PROBLEM
-- find solution of how to change notification once it hits the max number
-- increment notification nr key once notification gets triggered
-- How to schedule changing notification content
-	- schedule new notifications once old word is done
-	- schedule new notification every time one is triggered
-	- schedule notification every day
-
-
-Notifications:
-- debug them
-- random testing of words (array of index)
 
 Databases:
 - import database from quizzlet
@@ -36,10 +23,3 @@ Down the line:
 - create user profile
 - server to store datasets & users
 - adds
-
-
-- automatically adapt font size depending on how much text we add
-- new datapair also by clicking enter in last column
-- new column: numbers shown
-- add button, re-learn
-- add option, num. of notifications for word

@@ -132,27 +132,27 @@ CREATE TABLE $tableName (
 
   Future<Database> createDefaultPackage(Database db) async {
 
-    String fileName = 'spanish_english_verbs';
+    List<String> fileNames = ['spanish_english_verbs', 'french_english_verbs', 'german_english_verbs', 'portuguese_english_verbs'];
 
     List<databaseKey> tables = await getAllExistingDataTablesIntern(db);
     List<String> names = [];
-    for(databaseKey table in tables) {
+    for (databaseKey table in tables) {
       names.add(table.getKey(space: '_'));
     }
+    for(String fileName in fileNames) {
+      if (names.contains(fileName) == false) {
+        createDBintern(db, fileName);
 
-    if(names.contains(fileName) == false) {
-      createDBintern(db, fileName);
-
-      final List<List<dynamic>> csvData = await loadCSVtoDB(fileName);
-      for (int i = 0; i < csvData.length; i++) {
-        WordPair newWordPair = WordPair(baseWord: csvData[i][0],
-            translation: csvData[i][1],
-            numberSeen: 0,
-            maxNumber: 10); //DEFAULT_MAX_NR_NOTIF);
-        addWordPair(newWordPair, fileName);
+        final List<List<dynamic>> csvData = await loadCSVtoDB(fileName);
+        for (int i = 0; i < csvData.length; i++) {
+          WordPair newWordPair = WordPair(baseWord: csvData[i][0],
+              translation: csvData[i][1],
+              numberSeen: 0,
+              maxNumber: 10); //DEFAULT_MAX_NR_NOTIF);
+          addWordPair(newWordPair, fileName);
+        }
       }
     }
-
     return db;
   }
 }
