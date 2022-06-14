@@ -42,15 +42,19 @@ class NotificationApi {
     String? payload,
     required DateTime scheduledTime,
     //required Time scheduledTime, // e.g. Time(8) = 8 am
-  }) async => _notifications.zonedSchedule(
-    notID, title, body,
-    tz.TZDateTime.from(scheduledTime, tz.local), //_scheduleDaily(scheduledTime),  //
-    await _notificationDetails(), payload: payload,
-    androidAllowWhileIdle: true,
-    uiLocalNotificationDateInterpretation:
+  }) async {
+    tz.initializeTimeZones();
+    final locationName = await FlutterNativeTimezone.getLocalTimezone();
+    _notifications.zonedSchedule(
+      notID, title, body,
+      tz.TZDateTime.from(scheduledTime, tz.getLocation(locationName)),//tz.local), //tz.TZDateTime.now(tz.local), //, //_scheduleDaily(scheduledTime),  //
+      await _notificationDetails(), payload: payload,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
       UILocalNotificationDateInterpretation.absoluteTime,
-    matchDateTimeComponents: DateTimeComponents.time,
-  );
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
 
   static tz.TZDateTime _scheduleDaily(Time time) {
     final now = tz.TZDateTime.now(tz.local);
@@ -59,6 +63,13 @@ class NotificationApi {
     return scheduledDate.isBefore(now)
         ? scheduledDate.add(Duration(days: 1))
         : scheduledDate;
+  }
+
+  static tz.TZDateTime _schedule(DateTime time) {
+    final now = tz.TZDateTime.now(tz.local);
+    final scheduledDate = tz.TZDateTime(tz.local, time.year, time.month, time.day, time.minute, time.second);
+
+    return scheduledDate;
   }
 
   static Future init({bool initScheduled = false}) async {

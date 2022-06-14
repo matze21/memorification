@@ -112,8 +112,8 @@ class WordPair {
 
   Map<String, Object?> toJson() => {
     WordPairFields.id: id,
-    WordPairFields.baseWord: baseWord,
     WordPairFields.numberSeen: numberSeen,
+    WordPairFields.baseWord: baseWord,
     WordPairFields.translation: translation,
     WordPairFields.maxNumber: maxNumber,
   };

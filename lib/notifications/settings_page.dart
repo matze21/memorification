@@ -40,12 +40,12 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
     updateStoredValues();
     super.initState();
     listenNotifications();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -102,17 +102,26 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
       setState(() {
         numNot = prefs.getInt('numNot')!;
       });
+    } else {
+      prefs.setInt('numNot', numNot);
     }
+
     if(prefs.getInt('startT') != null) {
       setState(() {
         startT = prefs.getInt('startT')!;
       });
+    } else {
+      prefs.setInt('startT', startT);
     }
+
     if(prefs.getInt('endT') != null)   {
       setState(() {
         endT = prefs.getInt('endT')!;
       });
+    } else {
+      prefs.setInt('endT', endT);
     }
+
     if(prefs.getString('currentStudyPackageString') != null) {
       setState(() {
         dataBaseKey = prefs.getString('currentStudyPackageString')!;
@@ -269,7 +278,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
                         final prefs = await SharedPreferences.getInstance();
                         bool? areScheduledInternal = prefs.getBool('areScheduled');
                         setState(() {
-                          areScheduled = (areScheduledInternal != null) ? areScheduledInternal! : false;
+                          areScheduled = (areScheduledInternal != null) ? areScheduledInternal : false;
                         });
                         },
                       child: Text("schedule notifications"),

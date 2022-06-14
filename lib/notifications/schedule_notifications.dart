@@ -19,7 +19,10 @@ class staticFunction {
       bool? areScheduled = prefs.getBool('areScheduled');
 
       if((isFirstCall) || ((areScheduled != null) && areScheduled)) {
-        NotificationApi.init();
+        //if(isFirstCall) {
+          NotificationApi.init(initScheduled: true);
+        //}
+        //NotificationApi.cancel();
 
         final now = DateTime.now();
         final int numNot_1 = (numNot == 1) ? 1 : numNot - 1;
@@ -32,11 +35,11 @@ class staticFunction {
           if (now.hour >= startT) { //if startT is already in the past use the current time
             hour = now.hour;
             if (globalNrNot == 0) { //if first call add some minutes
-              minute = now.minute.toDouble() + 5.0;
+              minute = now.minute.toDouble() + 1.0;
             }
           }
         }
-        final double timeDiffMinutes = (hour - startT) * 60 / (numNot_1);
+        final double timeDiffMinutes = (endT - startT) * 60 / (numNot_1);
 
         for (WordPair curWordPair in wordPairs) {
           if (curWordPair.numberSeen < curWordPair.maxNumber) {
@@ -47,7 +50,7 @@ class staticFunction {
                   break;
                 }
                 DateTime scheduledTime = DateTime(now.year, now.month, now.day, hour, minute.toInt(), 0);
-                NotificationApi.showScheduledNotification(
+                await NotificationApi.showScheduledNotification( //use await??
                   notID: globalNrNot,
                   title: curWordPair.baseWord,
                   body: curWordPair.translation,

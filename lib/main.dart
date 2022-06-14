@@ -6,16 +6,21 @@ import 'package:workmanager/workmanager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'notifications/schedule_notifications.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '/notifications/notification_api.dart';
 
 void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
+
+    NotificationApi.cancel();
+
     final prefs = await SharedPreferences.getInstance();
     if((prefs.getInt('numNot') != null) && (prefs.getInt('startT')! != null) && (prefs.getInt('endT') != null) && (prefs.getString('currentStudyPackageString') != null)) {
-      int numNot = prefs.getInt('numNot')!;
-      int startT = prefs.getInt('startT')!;
-      int endT = prefs.getInt('endT')!;
-      String dataBaseKey = prefs.getString('currentStudyPackageString')!;
-      bool didUpdate = await staticFunction.scheduleNotificationsPerDay(endT, startT, numNot, dataBaseKey, false);
+      final int numNot = prefs.getInt('numNot')!;
+      final int startT = prefs.getInt('startT')!;
+      final int endT = prefs.getInt('endT')!;
+      final String dataBaseKey = prefs.getString('currentStudyPackageString')!;
+      final bool didUpdate = await staticFunction.scheduleNotificationsPerDay(endT, startT, numNot, dataBaseKey, false);
+      print('did update' + didUpdate.toString());
     }
 
     final now = DateTime.now();
