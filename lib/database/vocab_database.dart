@@ -15,8 +15,7 @@ class VocabDatabase {
       return _database!;
     } else {
       _database = await _initDB('vocabs.db');
-      createDefaultPackage(_database!); //create default table
-      return _database!;
+      return await createDefaultPackage(_database!); //create default table!;
     }
   }
 
@@ -131,7 +130,7 @@ CREATE TABLE $tableName (
     db.close();
   }
 
-  Future createDefaultPackage(Database db) async {
+  Future<Database> createDefaultPackage(Database db) async {
 
     String fileName = 'spanish_english_verbs';
 
@@ -153,6 +152,7 @@ CREATE TABLE $tableName (
         addWordPair(newWordPair, fileName);
       }
     }
-  }
 
+    return db;
+  }
 }
