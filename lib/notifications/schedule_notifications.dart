@@ -40,6 +40,7 @@ class staticFunction {
           }
         }
         final double timeDiffMinutes = (endT - startT) * 60 / (numNot_1);
+        DateTime endTime = DateTime(now.year, now.month, now.day, endT, 0,0);
 
         for (WordPair curWordPair in wordPairs) {
           if (curWordPair.numberSeen < curWordPair.maxNumber) {
@@ -64,6 +65,10 @@ class staticFunction {
                 curWordPair.iterateNumSeen();
 
                 globalNrNot += 1;
+
+                if(scheduledTime.isAfter(endTime)) {
+                  globalNrNot = numNot;
+                }
 
                 if (globalNrNot == numNot) {
                   await VocabDatabase.instance.updateWordPair(curWordPair, dataBaseKey);
