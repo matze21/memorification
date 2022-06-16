@@ -99,10 +99,15 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
         for (WordPair wordPair in curWordPairList) {
           this.tableRowList.add(
               TableRow(
-               decoration: BoxDecoration(color: Colors.black38, border:
-                  Border(top:    BorderSide(color: Colors.white, width: 1, style: BorderStyle.solid),
-                         bottom: BorderSide(color: Colors.white, width: 1, style: BorderStyle.solid),
-                  )),
+               decoration: BoxDecoration(
+                   color: Colors.black38,
+                   borderRadius: BorderRadius.circular(15),
+                   boxShadow: [BoxShadow(color: Colors.grey,
+                                        //offset: const Offset(5.0, 5.0,), //Offset
+                                        blurRadius: 1.0,
+                                        spreadRadius: 2.0,
+                              )], //BoxShadow
+               ),
                children: [
                 Container(child: settingsButton(wordPair)),
                 TextField(

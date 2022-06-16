@@ -138,26 +138,34 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
     }
   }
 
-  BoxDecoration boxDeco = BoxDecoration(color: Colors.black38, border:
-  Border(top:    BorderSide(color: Colors.white, width: 1, style: BorderStyle.solid),
-  bottom: BorderSide(color: Colors.white, width: 1, style: BorderStyle.solid),
-  ));
+  BoxDecoration boxDeco = BoxDecoration(
+      borderRadius: BorderRadius.circular(15),
+      boxShadow: [BoxShadow(color: Colors.black87,
+        //offset: const Offset(5.0, 5.0,), //Offset
+        blurRadius: 2.0,
+        spreadRadius: 2.0,
+      )], //BoxShadow
+  );
+
+  final double widthBetweenRows = 15;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Notification Schedule", style: TextStyle(fontSize: 24),)),
       body: Table(
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         columnWidths: {
           0: FlexColumnWidth(4),
           1: FlexColumnWidth(1),
         },
         children: [
+          TableRow(children: [Column(children: [SizedBox(height: widthBetweenRows)]), Column(children: [SizedBox(height: widthBetweenRows)]),]),
           TableRow(decoration: boxDeco,
             children: [Column(
-              children: [Text('How many notifications per day would you like to receive'
-                , style: TextStyle(color: Colors.white, fontSize: 18)
-              ),],
+              children: [Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Notifications per day', style: TextStyle(color: Colors.white, fontSize: 18))),],
             ),
               Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -185,11 +193,12 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
               )
             ]
           ),
+          TableRow(children: [Column(children: [SizedBox(height: widthBetweenRows)]), Column(children: [SizedBox(height: widthBetweenRows)]),]),
           TableRow(decoration: boxDeco,
               children: [Column(
-                children: [Text('Earliest notification you would like to receive'
-                    , style: TextStyle(color: Colors.white, fontSize: 18)
-                ),],
+                children: [Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Earliest notification', style: TextStyle(color: Colors.white, fontSize: 18))),],
               ),
                 Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -220,14 +229,14 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
                 )
               ]
           ),
+          TableRow(children: [Column(children: [SizedBox(height: widthBetweenRows)]), Column(children: [SizedBox(height: widthBetweenRows)]),]),
           TableRow(decoration: boxDeco,
               children: [Column(
-                children: [Text('Latest notification you would like to receive'
-                    , style: TextStyle(color: Colors.white, fontSize: 18)
-                ),],
+                children: [Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text('Latest notification', style: TextStyle(color: Colors.white, fontSize: 18))),],
               ),
                 Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       DropdownButton<int>(
                           dropdownColor: Colors.black,
@@ -255,6 +264,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
                 )
               ]
           ),
+          TableRow(children: [Column(children: [SizedBox(height: widthBetweenRows)]), Column(children: [SizedBox(height: widthBetweenRows)]),]),
           TableRow(
             children: [
               Column(
@@ -264,6 +274,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
               Column()
             ]
           ),
+          TableRow(children: [Column(children: [SizedBox(height: widthBetweenRows)]), Column(children: [SizedBox(height: widthBetweenRows)]),]),
           TableRow(
               children: [
                 Column(
@@ -295,6 +306,10 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver{
 
   Widget turnOffNotifications() {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        onPrimary: Colors.white,
+        primary: Colors.grey.shade700,
+      ),
       onPressed: () async {
         final prefs = await SharedPreferences.getInstance();
         prefs.remove('currentStudyPackageString');

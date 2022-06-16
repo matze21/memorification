@@ -70,7 +70,6 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
           ),)],),
         ]
       ),
-      actions: [findAllButton()] //, Icon(Icons.search), SizedBox(width: 12)],
     ),
     body: Center(
       child: isLoading
@@ -94,29 +93,6 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
       },
     ),
   );
-
-  Widget findAllButton() {
-    return ElevatedButton(
-      onPressed: () async {
-        await VocabDatabase.instance.getAllExistingDataTables();
-        await refreshVocabPackages();
-      },
-      child: Icon(Icons.search, size: 20.0,),
-    );
-  }
-
-
-
-  Widget selectStudyPackage(databaseKey key) {
-    return ElevatedButton(
-      onPressed: () async {
-        final prefs = await SharedPreferences.getInstance();
-        prefs.setString('currentStudyPackageString', key.getKey());
-        refreshVocabPackages();
-      },
-      child: Text('study package'),
-    );
-  }
 
   Widget renderPackages() => StaggeredGridView.countBuilder(
     padding: EdgeInsets.all(8),
@@ -166,23 +142,45 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                tableNames.remove(vocabPackage); //only removes from visu
-                await VocabDatabase.instance.deleteDB(vocabPackage.getKey());
-                final prefs = await SharedPreferences.getInstance();
-                if((currentStudyPackage != null) && (vocabPackage.getKey() == currentStudyPackage!.getKey())) { //reset the pointer to the study package if we delete the current one
-                    currentStudyPackage = null;
-                    prefs.remove('currentStudyPackageString');
-                }
-                await refreshVocabPackages();
-              },
-              child: Icon(Icons.delete, size: 20.0,),
-            ),
-            selectStudyPackage(vocabPackage)
-          ],
-        ),
+            SizedBox(height: 15),
+            Row(
+              children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                       primary: Colors.transparent, // background
+                       onPrimary: Colors.black), // foreground,
+                    onPressed: () async {
+                      tableNames.remove(vocabPackage); //only removes from visu
+                      await VocabDatabase.instance.deleteDB(vocabPackage.getKey());
+                      final prefs = await SharedPreferences.getInstance();
+                      if((currentStudyPackage != null) && (vocabPackage.getKey() == currentStudyPackage!.getKey())) { //reset the pointer to the study package if we delete the current one
+                        currentStudyPackage = null;
+                        prefs.remove('currentStudyPackageString');
+                      }
+                      await refreshVocabPackages();
+                    },
+                    child: Icon(Icons.delete, size: 20.0),
+                  ),
+                  selectStudyPackage(vocabPackage, color)
+                  ]
+                )
+              ],
+            )
       ),
+    );
+  }
+
+  Widget selectStudyPackage(databaseKey key, Color color) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          primary: Colors.transparent, // background
+          onPrimary: Colors.black), // foreground,
+      onPressed: () async {
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString('currentStudyPackageString', key.getKey());
+        refreshVocabPackages();
+      },
+      child: Text('study'),
     );
   }
 
