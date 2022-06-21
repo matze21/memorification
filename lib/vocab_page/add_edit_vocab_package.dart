@@ -20,20 +20,18 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
   late List<WordPair> curWordPairList;
   late List<TableRow> tableRowList;
   final double fontSize = 16;
-
   bool isLoading = true;
 
   @override
   void initState() {
     getWordPairs();
     super.initState();
-
   }
 
   Future getWordPairs() async {
     setState(() => isLoading = true);
     curWordPairList = await VocabDatabase.instance.readAllWordPairs(widget.tableName.getKey());
-    setState(() => updateLocalTable());
+    updateLocalTable();
     setState(() => isLoading = false);
   }
 
@@ -49,9 +47,7 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
       'No vocab in this package', style: TextStyle(color: Colors.white, fontSize: 24),
     ))
         : Scrollbar(
-        thickness: 10,
-        isAlwaysShown: true,
-        radius: const Radius.circular(10), // give the thumb rounded corners
+        interactive: true,
         child: ListView.builder(
           itemCount: this.tableRowList.length, // Don't forget this line
           itemBuilder: (context, index) => Table(
@@ -65,14 +61,12 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
               },
               children: [this.tableRowList[index]],
           ),
+          scrollDirection: Axis.vertical,
         ),
-        )
-        //child:
-        //border: TableBorder.all(), children: this.tableRowList)),
+    )
   );
 
   void updateLocalTable() {
-    setState(() {
       this.tableRowList = [
         TableRow(children: [
           Column(children: []),
@@ -131,8 +125,7 @@ class _AddEditPackagePageState extends State<AddEditPackagePage> {
               ])
           );
         }
-      }
-    });
+      };
   }
 
   Widget buildNewButton() {

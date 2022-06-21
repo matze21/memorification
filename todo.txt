@@ -7,8 +7,14 @@ epics
 2. make app work faster
 	- faster databank requests (from json function better?)
 3. have default databanks (search through by button, not editable?)
-	- add default databanks from quizzlet & duolingo
+	- add default databanks from quizzlet & duolingo (for watching adds)
+	- remove search button
 4. adds
+5. create own company
+6. test in ios - need to pay for apple
+7. upload in ios & goolge stroe
+
+
 
 - add a in progress icon of which word we currently learning (low prio)
 
@@ -22,4 +28,3 @@ Databases:
 Down the line:
 - create user profile
 - server to store datasets & users
-- adds

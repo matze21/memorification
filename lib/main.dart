@@ -43,11 +43,6 @@ Future main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Workmanager().registerPeriodicTask(
-  //   "dailyNotificationSchedule",
-  //   "backUp",
-  //   frequency: Duration(minutes: 1),
-  // );
 
   Workmanager().registerOneOffTask(
       "dailyNotificationSchedule",
