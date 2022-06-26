@@ -8,7 +8,6 @@ import '/database/model.dart';
 import '/vocab_page//add_edit_vocab_package.dart';
 import '/vocab_page/add_vocab_package_page.dart';
 
-
 class vocabPackagesPage extends StatefulWidget {
   const vocabPackagesPage({Key? key}) : super(key: key);
   @override
@@ -36,16 +35,19 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   Future refreshVocabPackages() async {
     setState(() => isLoading = true);
 
-    List<databaseKey> tableNamesCopy = await VocabDatabase.instance.getAllExistingDataTables();
-    setState(() { tableNames = tableNamesCopy; });
+    List<databaseKey> tableNamesCopy =
+        await VocabDatabase.instance.getAllExistingDataTables();
+    setState(() {
+      tableNames = tableNamesCopy;
+    });
 
-    if(tableNames.isNotEmpty) {
-        setState(() => isPackageExisting = true);
+    if (tableNames.isNotEmpty) {
+      setState(() => isPackageExisting = true);
     }
 
     final prefs = await SharedPreferences.getInstance();
     currentStudyPackage = null;
-    if(prefs.getString('currentStudyPackageString') != null) {
+    if (prefs.getString('currentStudyPackageString') != null) {
       final String curString = prefs.getString('currentStudyPackageString')!;
       currentStudyPackage = databaseKey.getDataBaseKeyFromKey(curString);
     }
@@ -55,70 +57,86 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Table(children:
-        [TableRow(
-          children: [Text('Vocab Packages',
-            style: TextStyle(fontSize: 24),)],
-          ),
-        TableRow(
-          children: [Container(width: 200, child: Text(
-              (currentStudyPackage == null)
-                  ? 'No package selected'
-                  : 'Studying: ' + currentStudyPackage!.getKey(space: ' ')
-              , style: TextStyle(color: Colors.white, fontSize: 18)
-          ),)],),
-        ]
-      ),
-    ),
-    body: Center(
-      child: isLoading
-          ? CircularProgressIndicator()
-          : tableNames.isEmpty
-          ? Text(
-        'No Packages loaded',
-        style: TextStyle(color: Colors.white, fontSize: 24),
-      )
-          : renderPackages(),
-    ),
-    floatingActionButton: FloatingActionButton(
-      backgroundColor: Colors.black,
-      child: Icon(Icons.add),
-      onPressed: () async {
-        await Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => AddVocabPackagePage()),
-        );
+        appBar: AppBar(
+          title: Table(children: [
+            TableRow(
+              children: [
+                Text(
+                  'Vocab Packages',
+                  style: TextStyle(fontSize: 24),
+                )
+              ],
+            ),
+            TableRow(
+              children: [
+                Container(
+                  width: 200,
+                  child: Text(
+                      (currentStudyPackage == null)
+                          ? 'No package selected'
+                          : 'Studying: ' +
+                              currentStudyPackage!.getKey(space: ' '),
+                      style: TextStyle(color: Colors.white, fontSize: 18)),
+                )
+              ],
+            ),
+          ]),
+        ),
+        body: Center(
+          child: isLoading
+              ? CircularProgressIndicator()
+              : tableNames.isEmpty
+                  ? Text(
+                      'No Packages loaded',
+                      style: TextStyle(color: Colors.white, fontSize: 24),
+                    )
+                  : renderPackages(),
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.black,
+          child: Icon(Icons.add),
+          onPressed: () async {
+            await Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => AddVocabPackagePage()),
+            );
 
-        await refreshVocabPackages();
-      },
-    ),
-  );
+            await refreshVocabPackages();
+          },
+        ),
+      );
 
   Widget renderPackages() => StaggeredGridView.countBuilder(
-    padding: EdgeInsets.all(8),
-    itemCount: tableNames.length,
-    staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-    crossAxisCount: 4,
-    mainAxisSpacing: 4,
-    crossAxisSpacing: 4,
-    itemBuilder: (context, index) {
-      final databaseKey package = tableNames[index];
+        padding: EdgeInsets.all(8),
+        itemCount: tableNames.length,
+        staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+        crossAxisCount: 4,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
+        itemBuilder: (context, index) {
+          final databaseKey package = tableNames[index];
 
-      return GestureDetector(
-        onTap: () async {
-          await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => AddEditPackagePage(package),
-          ));
+          return GestureDetector(
+            onTap: () async {
+              await Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => AddEditPackagePage(package),
+              ));
 
-          await refreshVocabPackages();
+              await refreshVocabPackages();
+            },
+            child: NoteCardWidget(package, index),
+          );
         },
-        child: NoteCardWidget(package, index),
       );
-    },
-  );
 
-  Widget NoteCardWidget(databaseKey vocabPackage, int index){
-    final _lightColors = [Colors.amber.shade300, Colors.lightGreen.shade300, Colors.lightBlue.shade300, Colors.orange.shade300, Colors.pinkAccent.shade100, Colors.tealAccent.shade100];
+  Widget NoteCardWidget(databaseKey vocabPackage, int index) {
+    final _lightColors = [
+      Colors.amber.shade300,
+      Colors.lightGreen.shade300,
+      Colors.lightBlue.shade300,
+      Colors.orange.shade300,
+      Colors.pinkAccent.shade100,
+      Colors.tealAccent.shade100
+    ];
 
     /// Pick colors from the accent colors based on index
     final color = _lightColors[index % _lightColors.length];
@@ -127,46 +145,56 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
     return Card(
       color: color,
       child: Container(
-        constraints: BoxConstraints(minHeight: minHeight),
-        padding: EdgeInsets.all(8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 4),
-            Text( (vocabPackage.addition == null) ? (vocabPackage.base + ' ' + vocabPackage.second) :
-              (vocabPackage.base + ' ' + vocabPackage.second + ' ' + vocabPackage.addition!),
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          constraints: BoxConstraints(minHeight: minHeight),
+          padding: EdgeInsets.all(8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 4),
+              Text(
+                (vocabPackage.addition == null)
+                    ? (vocabPackage.base + ' ' + vocabPackage.second)
+                    : (vocabPackage.base +
+                        ' ' +
+                        vocabPackage.second +
+                        ' ' +
+                        vocabPackage.addition!),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            SizedBox(height: 15),
-            Row(
-              children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                       primary: Colors.transparent, // background
-                       onPrimary: Colors.black), // foreground,
-                    onPressed: () async {
-                      tableNames.remove(vocabPackage); //only removes from visu
-                      await VocabDatabase.instance.deleteDB(vocabPackage.getKey());
-                      final prefs = await SharedPreferences.getInstance();
-                      if((currentStudyPackage != null) && (vocabPackage.getKey() == currentStudyPackage!.getKey())) { //reset the pointer to the study package if we delete the current one
-                        currentStudyPackage = null;
-                        prefs.remove('currentStudyPackageString');
-                      }
-                      await refreshVocabPackages();
-                    },
-                    child: Icon(Icons.delete, size: 20.0),
-                  ),
-                  selectStudyPackage(vocabPackage, color)
-                  ]
+              SizedBox(height: 15),
+              Row(children: [
+                Flexible(
+                    child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.transparent, // background
+                      onPrimary: Colors.black), // foreground,
+                  onPressed: () async {
+                    tableNames.remove(vocabPackage); //only removes from visu
+                    await VocabDatabase.instance
+                        .deleteDB(vocabPackage.getKey());
+                    final prefs = await SharedPreferences.getInstance();
+                    if ((currentStudyPackage != null) &&
+                        (vocabPackage.getKey() ==
+                            currentStudyPackage!.getKey())) {
+                      //reset the pointer to the study package if we delete the current one
+                      currentStudyPackage = null;
+                      prefs.remove('currentStudyPackageString');
+                    }
+                    await refreshVocabPackages();
+                  },
+                  child: Icon(Icons.delete, size: 20.0),
+                )),
+                Flexible(
+                  child: selectStudyPackage(vocabPackage, color),
                 )
-              ],
-            )
-      ),
+              ])
+            ],
+          )),
     );
   }
 
@@ -180,7 +208,7 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
         prefs.setString('currentStudyPackageString', key.getKey());
         refreshVocabPackages();
       },
-      child: Text('study'),
+      child: FittedBox(fit: BoxFit.contain, child: Text('select')),
     );
   }
 

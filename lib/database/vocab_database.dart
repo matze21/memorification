@@ -149,6 +149,7 @@ CREATE TABLE $tableName (
               translation: csvData[i][1],
               numberSeen: 0,
               maxNumber: 10); //DEFAULT_MAX_NR_NOTIF);
+          print(csvData[i][0]);
           addWordPair(newWordPair, fileName);
         }
       }
