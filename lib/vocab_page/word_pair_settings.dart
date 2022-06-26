@@ -27,62 +27,68 @@ class _WordPairSettingsState extends State<WordPairSettings> {
   }
 
   Future updateSchedule() async {
-    await VocabDatabase.instance.updateWordPair(widget.wordPair, widget.tableName.getKey());
+    await VocabDatabase.instance
+        .updateWordPair(widget.wordPair, widget.tableName.getKey());
   }
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: Text("Notification Number"),
-    content: Table(children: [
-      TableRow(children: [
-        Slider(
-          min: 0,
-          max: 50,
-          value: _value,
-          label: '${_value.round()}',
-          divisions: 50,
-          onChanged: (value) {
-            setState(() {
-              _value = value;
-              didValueChange = true;
-            });
-            widget.wordPair.maxNumber = _value.toInt();
-          },
-        )
-      ],
-      ),
-      TableRow(children: [
-        ElevatedButton(
-            child: Text('Study word pair again'),
-            onPressed: () async {
-              widget.wordPair.numberSeen = 0;
-              await updateSchedule();
-            }
-        )
-      ],
-      ),
-      TableRow(children: [
-        ElevatedButton(
-            child: Text('Done Studying word pair'),
-            onPressed: () async {
-              widget.wordPair.numberSeen = widget.wordPair.maxNumber;
-              await updateSchedule();
-            }
-        )
-      ],
-      )
+        title: Text("Notification Number"),
+        content: Table(children: [
+          TableRow(
+            children: [
+              Slider(
+                min: 0,
+                max: 50,
+                value: _value,
+                label: '${_value.round()}',
+                divisions: 50,
+                onChanged: (value) {
+                  setState(() {
+                    _value = value;
+                    didValueChange = true;
+                  });
+                  widget.wordPair.maxNumber = _value.toInt();
+                },
+              )
+            ],
+          ),
+          TableRow(
+            children: [
+              ElevatedButton(
+                  child: Text('Study word pair again'),
+                  onPressed: () async {
+                    widget.wordPair.numberSeen = 0;
+                    await updateSchedule();
+                  })
+            ],
+          ),
+          TableRow(
+            children: [
+              ElevatedButton(
+                  child: Text('Done Studying word pair'),
+                  onPressed: () async {
+                    widget.wordPair.numberSeen = widget.wordPair.maxNumber;
+                    await updateSchedule();
+                  })
+            ],
+          )
+        ]),
+        actions: [
+          ElevatedButton(
+              child: Text('Exit'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+              }),
+          ElevatedButton(
+              child: Text('Done'),
+              onPressed: () async {
+                Navigator.of(context).pop();
 
-    ]
-    ),
-    actions: [
-      ElevatedButton(
-          child: Text('Done'),
-          onPressed: () async {
-            Navigator.of(context).pop();
-
-            if(didValueChange) { await updateSchedule(); }
-          }
-      )
-    ],
-  );
+                if (didValueChange) {
+                  await updateSchedule();
+                }
+              })
+        ],
+      );
 }

@@ -4,7 +4,6 @@ import '/database/model.dart';
 import 'add_edit_vocab_package.dart';
 
 class AddVocabPackagePage extends StatefulWidget {
-
   const AddVocabPackagePage({
     Key? key,
   }) : super(key: key);
@@ -31,59 +30,85 @@ class _AddVocabPackagePageState extends State<AddVocabPackagePage> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: Text('Enter two languages'),
-    content: Table(children: [
-      TableRow(children: [
-        TextField(
-          controller: controllerFirst..text = 'first',
-          onTap: () {controllerFirst.clear(); },
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
+        title: Text('Enter two languages'),
+        content: Table(children: [
+          TableRow(
+            children: [
+              TextField(
+                controller: controllerFirst..text = 'first',
+                onTap: () {
+                  controllerFirst.clear();
+                },
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              )
+            ],
           ),
-        )],
-       ),
-      TableRow(children: [
-        TextField(
-          controller: controllerSecond..text = 'second',
-          onTap: () {controllerSecond.clear(); },
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
+          TableRow(
+            children: [
+              TextField(
+                controller: controllerSecond..text = 'second',
+                onTap: () {
+                  controllerSecond.clear();
+                },
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              )
+            ],
           ),
-        )],
-      ),
-      TableRow(children: [
-        TextField(
-          controller: controllerAdd..text = addString,
-          onTap: () {controllerAdd.clear(); },
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-          ),
-        )],
-      )]
-
-    ),
-    actions: [
-      ElevatedButton(
-        child: Text('Done'),
-        onPressed: ()  {
-          if(controllerAdd.text != addString){
-            final databaseKey curTableName = addDatabaseTable(controllerFirst.text, controllerSecond.text, controllerAdd.text);
-            Navigator.of(context).pop();
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddEditPackagePage(curTableName)),);
-          } else {
-            final databaseKey curTableName = addDatabaseTable(controllerFirst.text, controllerSecond.text, null);
-            Navigator.of(context).pop();
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddEditPackagePage(curTableName)),);
-          }
-        }
-      )
-    ],
-  );
+          TableRow(
+            children: [
+              TextField(
+                controller: controllerAdd..text = addString,
+                onTap: () {
+                  controllerAdd.clear();
+                },
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              )
+            ],
+          )
+        ]),
+        actions: [
+          ElevatedButton(
+              child: Text('Exit'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              }),
+          ElevatedButton(
+              child: Text('Done'),
+              onPressed: () {
+                if (controllerAdd.text != addString) {
+                  final databaseKey curTableName = addDatabaseTable(
+                      controllerFirst.text,
+                      controllerSecond.text,
+                      controllerAdd.text);
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => AddEditPackagePage(curTableName)),
+                  );
+                } else {
+                  final databaseKey curTableName = addDatabaseTable(
+                      controllerFirst.text, controllerSecond.text, null);
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => AddEditPackagePage(curTableName)),
+                  );
+                }
+              })
+        ],
+      );
 }
 
-databaseKey addDatabaseTable(String firstLanguage, String secondLanguage, String? add)
-{
-  databaseKey key = databaseKey(base: firstLanguage, second: secondLanguage, addition: add);
+databaseKey addDatabaseTable(
+    String firstLanguage, String secondLanguage, String? add) {
+  databaseKey key =
+      databaseKey(base: firstLanguage, second: secondLanguage, addition: add);
   VocabDatabase.createDB(key.getKey());
 
   return key;
