@@ -4,6 +4,7 @@ import '/database/model.dart';
 import '/database/vocab_database.dart';
 import '/notifications/schedule_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' show Platform;
 
 class WordPairSettings extends StatefulWidget {
   const WordPairSettings(this.wordPair, this.tableName);
@@ -29,6 +30,24 @@ class _WordPairSettingsState extends State<WordPairSettings> {
   Future updateSchedule() async {
     await VocabDatabase.instance
         .updateWordPair(widget.wordPair, widget.tableName.getKey());
+    if (!Platform.isAndroid) {
+      final prefs = await SharedPreferences.getInstance();
+      if ((prefs.getInt('numNot') != null) &&
+          (prefs.getInt('startT')! != null) &&
+          (prefs.getInt('endT') != null) &&
+          (prefs.getString('currentStudyPackageString') != null)) {
+        final int numNot = prefs.getInt('numNot')!;
+        final int startT = prefs.getInt('startT')!;
+        final int endT = prefs.getInt('endT')!;
+        final String dataBaseKey =
+            prefs.getString('currentStudyPackageString')!;
+
+        await staticFunction.showErrorMessages(
+            endT, startT, numNot, dataBaseKey, context);
+        await staticFunction.updateAllNotifications(
+            endT, startT, numNot, dataBaseKey);
+      }
+    }
   }
 
   @override
