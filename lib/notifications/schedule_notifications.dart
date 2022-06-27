@@ -11,7 +11,6 @@ class staticFunction {
     final bool isTimeValid = endT > startT;
     final bool isNumNotValid = numNot > 0;
     bool didUpdate = false;
-    print("scheduled!");
     if (dataBaseKey != null && isNumNotValid && isTimeValid) {
       List<WordPair> wordPairs = await VocabDatabase.instance.readAllWordPairs(dataBaseKey);
 
@@ -19,10 +18,7 @@ class staticFunction {
       bool? areScheduled = prefs.getBool('areScheduled');
 
       if((isFirstCall) || ((areScheduled != null) && areScheduled)) {
-        //if(isFirstCall) {
           NotificationApi.init(initScheduled: true);
-        //}
-        //NotificationApi.cancel();
 
         final now = DateTime.now();
         final int numNot_1 = (numNot == 1) ? 1 : numNot - 1;
@@ -117,6 +113,61 @@ class staticFunction {
           return alert;
         },
       );
+    }
+  }
+
+  static Future<void> scheduleAllNotifications(int endT, int startT, int numNot, String? dataBaseKey) async {
+    final bool isTimeValid = endT > startT;
+    final bool isNumNotValid = numNot > 0;
+
+    if (dataBaseKey != null && isNumNotValid && isTimeValid) {
+      List<WordPair> wordPairs = await VocabDatabase.instance.readAllWordPairs(dataBaseKey);
+
+      final prefs = await SharedPreferences.getInstance();
+      {
+        NotificationApi.init(initScheduled: true);
+
+        final now = DateTime.now();
+        final int numNot_1 = (numNot == 1) ? 1 : numNot - 1;
+        double minute = 0.0;
+        int day       = now.day;
+        if (now.hour >= startT) {
+          final addedhour   = now.hour -startT;
+          minute = now.minute.toDouble() + 1.0 + addedhour *60;
+        }
+
+        final double timeDiffMinutes = (endT - startT) * 60 / (numNot_1);
+
+        int notNr = 0;
+        for (WordPair curWordPair in wordPairs) {
+            for (int i = curWordPair.numberSeen; i < curWordPair.maxNumber; i++) {
+
+                DateTime scheduledTime = DateTime(now.year, now.month, day, startT, minute.toInt(), 0);
+
+                if(scheduledTime.hour >= endT) {
+                  day = day+1;
+                }
+                scheduledTime = DateTime(now.year, now.month, day, startT, minute.toInt(), 0);
+
+                await NotificationApi.showScheduledNotification(
+                  notID: notNr,
+                  title: curWordPair.baseWord,
+                  body: curWordPair.translation,
+                  payload: curWordPair.numberSeen.toString(),
+                  scheduledTime: scheduledTime,
+                );
+
+                print(notNr.toString() + ' ' + scheduledTime.toString());
+
+                minute = minute + timeDiffMinutes;
+                curWordPair.iterateNumSeen();
+
+                notNr += 1;
+            }
+            await VocabDatabase.instance.updateWordPair(curWordPair, dataBaseKey);
+        }
+        prefs.setBool('areScheduled', true);
+      }
     }
   }
 }

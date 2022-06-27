@@ -10,6 +10,7 @@ import '/database/model.dart';
 import './schedule_notifications.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' show Platform;
 
 class Page2 extends StatefulWidget {
   const Page2({Key? key}) : super(key: key);
@@ -332,9 +333,13 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver {
                     onPressed: () async {
                       staticFunction.showErrorMessages(
                           endT, startT, numNot, dataBaseKey, context);
-                      final bool didUpdate =
-                          await staticFunction.scheduleNotificationsPerDay(
-                              endT, startT, numNot, dataBaseKey, true);
+
+                      if(Platform.isAndroid) {
+                        await staticFunction.scheduleNotificationsPerDay(endT, startT, numNot, dataBaseKey, true);
+                      } else {
+                        await staticFunction.scheduleAllNotifications(endT, startT, numNot, dataBaseKey);
+                      }
+
                       final prefs = await SharedPreferences.getInstance();
                       bool? areScheduledInternal =
                           prefs.getBool('areScheduled');
