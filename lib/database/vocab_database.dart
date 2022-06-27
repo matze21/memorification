@@ -23,7 +23,8 @@ class VocabDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    Database db = await openDatabase(path, version: 1); //, onCreate: _createDB);
+    Database db =
+        await openDatabase(path, version: 1); //, onCreate: _createDB);
     return db;
   }
 
@@ -54,14 +55,14 @@ CREATE TABLE $tableName (
 
   Future getAllExistingDataTablesIntern(final Database db) async {
     var tables = (await db
-        .query('sqlite_master', where: 'type = ?', whereArgs: ['table']))
+            .query('sqlite_master', where: 'type = ?', whereArgs: ['table']))
         .map((row) => row['name'] as String)
         .toList(growable: true);
     tables.remove('android_metadata');
     tables.remove('sqlite_sequence');
 
     List<databaseKey> tableNames = [];
-    for(String table in tables) {
+    for (String table in tables) {
       tableNames.add(databaseKey.getDataBaseKeyFromKey(table));
     }
     return tableNames;
@@ -130,22 +131,32 @@ CREATE TABLE $tableName (
     db.close();
   }
 
-  Future<Database> createDefaultPackage(Database db) async {
+  Future createDefaultPackageExt() async {
+    final db = await instance.database;
+    createDefaultPackage(db);
+  }
 
-    List<String> fileNames = ['spanish_english_verbs', 'french_english_verbs', 'german_english_verbs', 'portuguese_english_verbs'];
+  Future<Database> createDefaultPackage(Database db) async {
+    List<String> fileNames = [
+      'spanish_english_verbs',
+      'french_english_verbs',
+      'german_english_verbs',
+      'portuguese_english_verbs'
+    ];
 
     List<databaseKey> tables = await getAllExistingDataTablesIntern(db);
     List<String> names = [];
     for (databaseKey table in tables) {
       names.add(table.getKey(space: '_'));
     }
-    for(String fileName in fileNames) {
+    for (String fileName in fileNames) {
       if (names.contains(fileName) == false) {
         createDBintern(db, fileName);
 
         final List<List<dynamic>> csvData = await loadCSVtoDB(fileName);
         for (int i = 0; i < csvData.length; i++) {
-          WordPair newWordPair = WordPair(baseWord: csvData[i][0],
+          WordPair newWordPair = WordPair(
+              baseWord: csvData[i][0],
               translation: csvData[i][1],
               numberSeen: 0,
               maxNumber: 10); //DEFAULT_MAX_NR_NOTIF);

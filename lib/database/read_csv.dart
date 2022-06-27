@@ -4,5 +4,5 @@ import 'package:csv/csv.dart';
 
 Future<List<List<dynamic>>> loadCSVtoDB(String filename) async {
   final _rawData = await rootBundle.loadString("assets/" + filename + ".csv");
-  return const CsvToListConverter().convert(_rawData);
+  return const CsvToListConverter(eol: "\n").convert(_rawData);
 }
