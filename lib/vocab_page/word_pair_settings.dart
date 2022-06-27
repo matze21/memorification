@@ -42,7 +42,7 @@ class _WordPairSettingsState extends State<WordPairSettings> {
         final String dataBaseKey = prefs.getString('currentStudyPackageString')!;
 
         await staticFunction.showErrorMessages(endT, startT, numNot, dataBaseKey, context);
-        await staticFunction.scheduleAllNotifications(endT, startT, numNot, dataBaseKey);
+        await staticFunction.updateAllNotifications(endT, startT, numNot, dataBaseKey);
       }
     }
   }
