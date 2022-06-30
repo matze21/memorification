@@ -122,8 +122,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver {
 
     // set the seen number of notifications
     if (!Platform.isAndroid) {
-      await staticFunction.updateSeenWordPairs(
-          endT, startT, numNot, dataBaseKey);
+      await staticFunction.updateSeenWordPairs();
     }
   }
 

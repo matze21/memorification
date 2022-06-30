@@ -167,6 +167,10 @@ class staticFunction {
         prefs.setInt('startday', now.day);
         prefs.setInt('starthour', now.hour);
         prefs.setInt('startmin', now.minute);
+        prefs.setString('startKey', dataBaseKey);
+        prefs.setInt('startST', startT);
+        prefs.setInt('startET', endT);
+        prefs.setInt('startNN', numNot);
         for (WordPair curWordPair in wordPairs) {
           for (int i = curWordPair.numberSeen; i < curWordPair.maxNumber; i++) {
             DateTime scheduledTime =
@@ -201,10 +205,13 @@ class staticFunction {
   }
 
   // update the notifications sent already
-  static Future<void> updateSeenWordPairs(
-      int endT, int startT, int numNot, String? dataBaseKey) async {
+  static Future<void> updateSeenWordPairs() async {
     final prefs = await SharedPreferences.getInstance();
-    if ((prefs.getInt('startyear') != null) &&
+    if ((prefs.getString('startKey') != null) &&
+        (prefs.getInt('startST') != null) &&
+        (prefs.getInt('startET') != null) &&
+        (prefs.getInt('startNN') != null) &&
+        (prefs.getInt('startyear') != null) &&
         (prefs.getInt('startmonth')! != null) &&
         (prefs.getInt('startday') != null) &&
         (prefs.getInt('starthour') != null) &&
@@ -214,12 +221,20 @@ class staticFunction {
       final int startday = prefs.getInt('startday')!;
       final int starthour = prefs.getInt('starthour')!;
       final int startmin = prefs.getInt('startmin')!;
+      final String dataBaseKey = prefs.getString('startKey')!;
+      final int startT = prefs.getInt('startST')!;
+      final int endT = prefs.getInt('startET')!;
+      final int numNot = prefs.getInt('startNN')!;
 
       prefs.remove('startyear');
       prefs.remove('startmonth');
       prefs.remove('startday');
       prefs.remove('starthour');
       prefs.remove('startmin');
+      prefs.remove('startkey');
+      prefs.remove('startST');
+      prefs.remove('startET');
+      prefs.remove('startNN');
 
       DateTime startTime =
           DateTime(startyear, startmonth, startday, starthour, startmin, 0);
@@ -227,7 +242,7 @@ class staticFunction {
       print("startTime " + startTime.toString());
 
       List<WordPair> wordPairs =
-          await VocabDatabase.instance.readAllWordPairs(dataBaseKey!);
+          await VocabDatabase.instance.readAllWordPairs(dataBaseKey);
 
       final now = DateTime.now();
       final int numNot_1 = (numNot == 1) ? 1 : numNot - 1;
