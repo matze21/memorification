@@ -226,6 +226,7 @@ class staticFunction {
       final int endT = prefs.getInt('startET')!;
       final int numNot = prefs.getInt('startNN')!;
 
+      // by deleting the variables we ensure that for another update we first have to schedule notifications again
       prefs.remove('startyear');
       prefs.remove('startmonth');
       prefs.remove('startday');
@@ -257,7 +258,8 @@ class staticFunction {
       final double timeDiffMinutes = (endT - startT) * 60 / (numNot_1);
 
       for (WordPair curWordPair in wordPairs) {
-        for (int i = 0; i < curWordPair.maxNumber; i++) {
+        //update the word pairs that have not been seen yet
+        for (int i = curWordPair.numberSeen; i < curWordPair.maxNumber; i++) {
           DateTime scheduledTime =
               DateTime(startyear, startmonth, day, startT, minute.toInt(), 0);
 
@@ -277,85 +279,6 @@ class staticFunction {
         print(
             "updated Wordpair nr seen = " + curWordPair.numberSeen.toString());
         await VocabDatabase.instance.updateWordPair(curWordPair, dataBaseKey);
-      }
-    }
-  }
-
-  // check if notifications are already set, if yes update only notifications that are not displayed yet
-  static Future<void> updateAllNotifications(
-      int endT, int startT, int numNot, String? dataBaseKey) async {
-    final bool isTimeValid = endT > startT;
-    final bool isNumNotValid = numNot > 0;
-
-    final prefs = await SharedPreferences.getInstance();
-    if ((prefs.getInt('startyear') != null) &&
-        (prefs.getInt('startmonth')! != null) &&
-        (prefs.getInt('startday') != null) &&
-        (prefs.getInt('starthour') != null)) {
-      final int startyear = prefs.getInt('startyear')!;
-      final int startmonth = prefs.getInt('startmonth')!;
-      final int startday = prefs.getInt('startday')!;
-      final int starthour = prefs.getInt('starthour')!;
-      DateTime startTime =
-          DateTime(startyear, startmonth, startday, starthour, 0, 0);
-
-      if (dataBaseKey != null && isNumNotValid && isTimeValid) {
-        List<WordPair> wordPairs =
-            await VocabDatabase.instance.readAllWordPairs(dataBaseKey);
-
-        final prefs = await SharedPreferences.getInstance();
-        {
-          NotificationApi.init(initScheduled: true);
-
-          // update seen notifications
-
-          final now = DateTime.now();
-          final int numNot_1 = (numNot == 1) ? 1 : numNot - 1;
-          double minute = 0.0;
-          int day = startday;
-          if (starthour >= startT) {
-            final addedhour = starthour - startT;
-            minute = now.minute.toDouble() + 1.0 + addedhour * 60;
-          }
-
-          final double timeDiffMinutes = (endT - startT) * 60 / (numNot_1);
-
-          int notNr = 0;
-
-          for (WordPair curWordPair in wordPairs) {
-            for (int i = curWordPair.numberSeen;
-                i < curWordPair.maxNumber;
-                i++) {
-              DateTime scheduledTime = DateTime(
-                  startyear, startmonth, day, startT, minute.toInt(), 0);
-
-              if ((scheduledTime.hour == endT && scheduledTime.minute > 1) ||
-                  (scheduledTime.hour > endT)) {
-                day = day + 1;
-                minute = 0.0;
-              }
-              scheduledTime = DateTime(
-                  startyear, startmonth, day, startT, minute.toInt(), 0);
-
-              if (scheduledTime.isAfter(now)) {
-                await NotificationApi.showScheduledNotification(
-                  notID: notNr,
-                  title: curWordPair.baseWord,
-                  body: curWordPair.translation,
-                  payload: curWordPair.numberSeen.toString(),
-                  scheduledTime: scheduledTime,
-                );
-
-                print(notNr.toString() + ' ' + scheduledTime.toString());
-
-                minute = minute + timeDiffMinutes;
-
-                notNr += 1;
-              }
-            }
-          }
-          prefs.setBool('areScheduled', true);
-        }
       }
     }
   }

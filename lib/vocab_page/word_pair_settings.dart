@@ -7,9 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 
 class WordPairSettings extends StatefulWidget {
-  const WordPairSettings(this.wordPair, this.tableName);
+  const WordPairSettings(this.wordPair, this.databasekey);
   final WordPair wordPair;
-  final databaseKey tableName;
+  final databaseKey databasekey;
 
   @override
   _WordPairSettingsState createState() => _WordPairSettingsState();
@@ -28,24 +28,38 @@ class _WordPairSettingsState extends State<WordPairSettings> {
   }
 
   Future updateSchedule() async {
-    await VocabDatabase.instance
-        .updateWordPair(widget.wordPair, widget.tableName.getKey());
+    final prefs = await SharedPreferences.getInstance();
+    bool needToUpdateNotifications =
+        (prefs.getString('currentStudyPackageString') != null)
+            ? (prefs.getString('currentStudyPackageString') ==
+                widget.databasekey.getKey())
+            : false;
 
-    if (!Platform.isAndroid) {
-      final prefs = await SharedPreferences.getInstance();
+    if (!Platform.isAndroid && needToUpdateNotifications) {
+      print('updating passed notifications');
+      // update already seen vocab in order to re-schedule the new notification number
+      await staticFunction.updateSeenWordPairs();
+    }
+
+    await VocabDatabase.instance
+        .updateWordPair(widget.wordPair, widget.databasekey.getKey());
+
+    if (!Platform.isAndroid && needToUpdateNotifications) {
       if ((prefs.getInt('numNot') != null) &&
           (prefs.getInt('startT')! != null) &&
-          (prefs.getInt('endT') != null) &&
-          (prefs.getString('currentStudyPackageString') != null)) {
+          (prefs.getInt('endT') != null)) {
         final int numNot = prefs.getInt('numNot')!;
         final int startT = prefs.getInt('startT')!;
         final int endT = prefs.getInt('endT')!;
         final String dataBaseKey =
             prefs.getString('currentStudyPackageString')!;
 
+        print('set new notifications');
+        // TODO: print message saying that we use the current start & end time / nr Not
+
         await staticFunction.showErrorMessages(
             endT, startT, numNot, dataBaseKey, context);
-        await staticFunction.updateAllNotifications(
+        await staticFunction.scheduleAllNotifications(
             endT, startT, numNot, dataBaseKey);
       }
     }
