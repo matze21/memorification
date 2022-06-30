@@ -303,6 +303,9 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver {
                         onChanged: (newVal) async {
                           setState(() {
                             endT = newVal!;
+                            if (endT == 0) {
+                              endT = 24; //set end time to 24 hours
+                            }
                             if (startT > endT && endT != 0) {
                               startT = endT - 1;
                             }
