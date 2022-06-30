@@ -30,6 +30,7 @@ class _WordPairSettingsState extends State<WordPairSettings> {
   Future updateSchedule() async {
     await VocabDatabase.instance
         .updateWordPair(widget.wordPair, widget.tableName.getKey());
+
     if (!Platform.isAndroid) {
       final prefs = await SharedPreferences.getInstance();
       if ((prefs.getInt('numNot') != null) &&

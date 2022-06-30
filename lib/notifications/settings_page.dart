@@ -112,12 +112,19 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver {
   }
 
   Future resetSchedule() async {
-    NotificationApi.cancel();
+    await NotificationApi.cancelAll();
     final prefs = await SharedPreferences.getInstance();
+    prefs.remove('currentStudyPackageString');
+    prefs.setBool('areScheduled', false);
     setState(() {
       areScheduled = false;
-      prefs.setBool('areScheduled', areScheduled);
     });
+
+    // set the seen number of notifications
+    if (!Platform.isAndroid) {
+      await staticFunction.updateSeenWordPairs(
+          endT, startT, numNot, dataBaseKey);
+    }
   }
 
   Future updateStoredValues() async {
@@ -334,10 +341,12 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver {
                       staticFunction.showErrorMessages(
                           endT, startT, numNot, dataBaseKey, context);
 
-                      if(Platform.isAndroid) {
-                        await staticFunction.scheduleNotificationsPerDay(endT, startT, numNot, dataBaseKey, true);
+                      if (Platform.isAndroid) {
+                        await staticFunction.scheduleNotificationsPerDay(
+                            endT, startT, numNot, dataBaseKey, true);
                       } else {
-                        await staticFunction.scheduleAllNotifications(endT, startT, numNot, dataBaseKey);
+                        await staticFunction.scheduleAllNotifications(
+                            endT, startT, numNot, dataBaseKey);
                       }
 
                       final prefs = await SharedPreferences.getInstance();
@@ -366,12 +375,7 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver {
         primary: Colors.grey.shade700,
       ),
       onPressed: () async {
-        final prefs = await SharedPreferences.getInstance();
-        prefs.remove('currentStudyPackageString');
         await resetSchedule();
-        setState(() {
-          areScheduled = false;
-        });
         //Workmanager().cancelByUniqueName("dailyNotificationSchedule");
       },
       child: Text('Stop Notificaitons'),
