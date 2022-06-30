@@ -45,7 +45,8 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver {
     20,
     21,
     22,
-    23
+    23,
+    24
   ];
   late int numNot = 1;
   late int startT = 6;
@@ -264,7 +265,10 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver {
                         onChanged: (newVal) async {
                           setState(() {
                             startT = (newVal!);
-                            if (startT > endT && startT != 23) {
+                            if (startT == 24) {
+                              startT = 0;
+                            }
+                            if (startT > endT) {
                               endT = startT + 1;
                             }
                           });
@@ -303,9 +307,6 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver {
                         onChanged: (newVal) async {
                           setState(() {
                             endT = newVal!;
-                            if (endT == 0) {
-                              endT = 24; //set end time to 24 hours
-                            }
                             if (startT > endT && endT != 0) {
                               startT = endT - 1;
                             }
