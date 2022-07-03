@@ -19,6 +19,10 @@ import workmanager
         UNUserNotificationCenter.current().delegate = self
 
         UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60))
+      
+      if #available(iOS 10.0, *) {
+        UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+      }
 
 //        WorkmanagerPlugin.setPluginRegistrantCallback { registry in
 //            // registry in this case is the FlutterEngine that is created in Workmanager's performFetchWithCompletionHandler

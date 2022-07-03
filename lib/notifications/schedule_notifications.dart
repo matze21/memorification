@@ -192,7 +192,13 @@ class staticFunction {
               scheduledTime: scheduledTime,
             );
 
-            print(notNr.toString() + ' ' + scheduledTime.toString());
+            print(notNr.toString() +
+                ' ' +
+                scheduledTime.toString() +
+                ' ' +
+                curWordPair.baseWord +
+                ' ' +
+                curWordPair.translation);
 
             minute = minute + timeDiffMinutes;
 

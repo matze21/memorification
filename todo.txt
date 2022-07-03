@@ -25,3 +25,8 @@ Databases:
 Down the line:
 - create user profile
 - server to store datasets & users
+
+
+Problem:
+apple only allows 64 notifications, delets other ones
+can't schedule later than a day!
