@@ -11,10 +11,6 @@ import workmanager
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
-      
-        //WorkmanagerPlugin.registerTask(withIdentifier: "task-identifier")
-
-        WorkmanagerPlugin.register(with: self.registrar(forPlugin: "be.tramckrijte.workmanager.WorkmanagerPlugin")!)
         
         UNUserNotificationCenter.current().delegate = self
 
@@ -23,6 +19,16 @@ import workmanager
       if #available(iOS 10.0, *) {
         UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
       }
+
+        WorkmanagerPlugin.setPluginRegistrantCallback { registry in
+            // Registry in this case is the FlutterEngine that is created in Workmanager's
+            // performFetchWithCompletionHandler or BGAppRefreshTask.
+            // This will make other plugins available during a background operation.
+            GeneratedPluginRegistrant.register(with: registry)
+        }
+
+      WorkmanagerPlugin.registerTask(withIdentifier: "backUp")
+      WorkmanagerPlugin.registerTask(withIdentifier: "dailyNotificationSchedule")
 
 //        WorkmanagerPlugin.setPluginRegistrantCallback { registry in
 //            // registry in this case is the FlutterEngine that is created in Workmanager's performFetchWithCompletionHandler
