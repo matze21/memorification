@@ -44,7 +44,7 @@ class staticFunction {
 
         for (WordPair curWordPair in wordPairs) {
           if (curWordPair.numberSeen < curWordPair.maxNumber) {
-            for (int i = 0; i < curWordPair.maxNumber; i++) {
+            for (int i = curWordPair.numberSeen; i < curWordPair.maxNumber; i++) {
               if (globalNrNot < numNot) {
                 if (isFirstCall && now.hour >= endT) {
                   break;
@@ -52,7 +52,6 @@ class staticFunction {
                 DateTime scheduledTime = DateTime(
                     now.year, now.month, now.day, hour, minute.toInt(), 0);
                 await NotificationApi.showScheduledNotification(
-                  //use await??
                   notID: globalNrNot,
                   title: curWordPair.baseWord,
                   body: curWordPair.translation,
