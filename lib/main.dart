@@ -31,7 +31,7 @@ void callbackDispatcher() {
     final now = DateTime.now();
     print("periodic task next in" + (24 - now.hour).toString());
     Workmanager().registerOneOffTask("dailyNotificationSchedule", "backUp",
-        initialDelay: Duration(minutes: 1), //hours: 24 - now.hour),
+        initialDelay: Duration(hours: 24 - now.hour),
         existingWorkPolicy: ExistingWorkPolicy.append);
     return Future.value(true);
   });
@@ -45,16 +45,16 @@ Future<void> main() async {
   ]);
 
   // use workmanager on android and schedule all notifications at once for ios
-  if(Platform.isAndroid) {
-    await Workmanager().initialize(
-      callbackDispatcher,
-      isInDebugMode: true,
-    );
-    await Workmanager().registerOneOffTask(
-      "dailyNotificationSchedule",
-      "backUp",
-    );
-  }
+  //if(Platform.isAndroid) {
+  await Workmanager().initialize(
+    callbackDispatcher,
+    //isInDebugMode: true,
+  );
+  await Workmanager().registerOneOffTask(
+    "dailyNotificationSchedule",
+    "backUp",
+  );
+  //}
 
   runApp(MyApp());
 }

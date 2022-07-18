@@ -344,13 +344,13 @@ class _MyPage2State extends State<Page2> with WidgetsBindingObserver {
                       staticFunction.showErrorMessages(
                           endT, startT, numNot, dataBaseKey, context);
 
-                      if (Platform.isAndroid) {
-                        await staticFunction.scheduleNotificationsPerDay(
-                            endT, startT, numNot, dataBaseKey, true);
-                      } else {
-                        await staticFunction.scheduleAllNotifications(
-                            endT, startT, numNot, dataBaseKey);
-                      }
+                      // if (Platform.isAndroid) {
+                      await staticFunction.scheduleNotificationsPerDay(
+                          endT, startT, numNot, dataBaseKey, true);
+                      // } else {
+                      //await staticFunction.scheduleAllNotifications(
+                      //    endT, startT, numNot, dataBaseKey);
+                      //}
 
                       final prefs = await SharedPreferences.getInstance();
                       bool? areScheduledInternal =

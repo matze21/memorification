@@ -15,13 +15,11 @@ class staticFunction {
     if (dataBaseKey != null && isNumNotValid && isTimeValid) {
       List<WordPair> wordPairs =
           await VocabDatabase.instance.readAllWordPairs(dataBaseKey);
-
       final prefs = await SharedPreferences.getInstance();
       bool? areScheduled = prefs.getBool('areScheduled');
 
       if ((isFirstCall) || ((areScheduled != null) && areScheduled)) {
         NotificationApi.init(initScheduled: true);
-
         final now = DateTime.now();
         final int numNot_1 = (numNot == 1) ? 1 : numNot - 1;
         double minute = 0.0;
@@ -44,7 +42,9 @@ class staticFunction {
 
         for (WordPair curWordPair in wordPairs) {
           if (curWordPair.numberSeen < curWordPair.maxNumber) {
-            for (int i = curWordPair.numberSeen; i < curWordPair.maxNumber; i++) {
+            for (int i = curWordPair.numberSeen;
+                i < curWordPair.maxNumber;
+                i++) {
               if (globalNrNot < numNot) {
                 if (isFirstCall && now.hour >= endT) {
                   break;
