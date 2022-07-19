@@ -8,6 +8,8 @@ import '/database/model.dart';
 import '/vocab_page//add_edit_vocab_package.dart';
 import '/vocab_page/add_vocab_package_page.dart';
 
+import 'package:workmanager/workmanager.dart';
+
 class vocabPackagesPage extends StatefulWidget {
   const vocabPackagesPage({Key? key}) : super(key: key);
   @override
@@ -58,6 +60,16 @@ class _vocabPackagesPageState extends State<vocabPackagesPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
+          actions: [
+            ElevatedButton(
+                onPressed: () async {
+                  await Workmanager().registerOneOffTask(
+                    "dailyNotificationSchedule",
+                    "backUp",
+                  );
+                },
+                child: Text("schedule task"))
+          ],
           title: Table(children: [
             TableRow(
               children: [

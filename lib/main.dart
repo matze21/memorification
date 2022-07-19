@@ -31,7 +31,7 @@ void callbackDispatcher() {
     final now = DateTime.now();
     print("periodic task next in" + (24 - now.hour).toString());
     Workmanager().registerOneOffTask("dailyNotificationSchedule", "backUp",
-        initialDelay: Duration(hours: 24 - now.hour),
+        initialDelay: Duration(minutes: 2), //hours: 24 - now.hour),
         existingWorkPolicy: ExistingWorkPolicy.append);
     return Future.value(true);
   });
