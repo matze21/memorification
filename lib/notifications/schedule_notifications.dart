@@ -42,6 +42,7 @@ class staticFunction {
 
         for (WordPair curWordPair in wordPairs) {
           if (curWordPair.numberSeen < curWordPair.maxNumber) {
+            bool newNotificationsScheduled = false;
             for (int i = curWordPair.numberSeen;
                 i < curWordPair.maxNumber;
                 i++) {
@@ -65,18 +66,18 @@ class staticFunction {
                 curWordPair.iterateNumSeen();
 
                 globalNrNot += 1;
+                newNotificationsScheduled = true;
 
                 if (scheduledTime.isAfter(endTime)) {
                   globalNrNot = numNot;
                 }
-
-                if (globalNrNot == numNot) {
-                  await VocabDatabase.instance
-                      .updateWordPair(curWordPair, dataBaseKey);
-                }
               } else {
                 break;
               }
+            }
+
+            if(newNotificationsScheduled) {
+              await VocabDatabase.instance.updateWordPair(curWordPair, dataBaseKey);
             }
           }
         }
